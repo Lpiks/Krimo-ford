@@ -1,0 +1,215 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Anta&family=Style+Script&family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+  --ford-blue: #003478;
+  --ford-light-blue: #0066b2;
+  --ford-silver: #f0f0f5;
+  --text-dark: #121212;
+  --text-light: #ffffff;
+  --white: #ffffff;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+
+  --font-primary: 'Inter', sans-serif;
+  --font-logo: 'Style Script', cursive;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--gray-100);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* RTL Support via dir attribute */
+[dir="rtl"] {
+  text-align: right;
+  font-family: 'Anta', 'Inter', sans-serif;
+  /* Use suitable Arabic font if needed, Anta is a placeholder, usually Cairo or Almarai */
+}
+
+[dir="rtl"] body {
+  direction: rtl;
+}
+
+/* Utilities */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--ford-blue);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background-color: var(--ford-light-blue);
+}
+
+.logo-text {
+  font-family: var(--font-logo);
+  font-size: 2rem;
+  color: var(--ford-blue);
+}
+
+/* Modern File Input */
+.file-upload-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.file-upload-wrapper:hover,
+.file-upload-wrapper.dragging {
+  border-color: var(--ford-blue);
+  background-color: #f0f8ff;
+}
+
+.file-upload-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.file-upload-content {
+  text-align: center;
+  color: #666;
+  pointer-events: none;
+}
+
+.file-upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.file-upload-wrapper:hover .upload-icon {
+  color: var(--ford-blue);
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--ford-blue);
+  backdrop-filter: blur(2px);
+}
+
+/* Modern Search Bar */
+.search-container {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 50px;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-container:focus-within {
+  box-shadow: 0 6px 20px rgba(0, 52, 120, 0.15);
+  border-color: var(--ford-blue);
+  transform: translateY(-1px);
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  font-size: 1rem;
+  color: var(--text-dark);
+  outline: none;
+  padding-right: 0.5rem;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.search-btn {
+  background-color: var(--ford-blue);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-btn:hover {
+  background-color: var(--ford-light-blue);
+  transform: scale(1.05);
+}

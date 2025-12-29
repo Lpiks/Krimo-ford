@@ -1,0 +1,107 @@
+{
+    "nav": {
+        "home": "Home",
+        "catalog": "Catalog",
+        "cart": "Cart",
+        "login": "Login",
+        "logout": "Logout",
+        "admin": "Admin",
+        "dashboard": "Dashboard",
+        "inventory": "Inventory",
+        "products": "Products",
+        "orders": "Orders"
+    },
+    "home": {
+        "title": "Welcome to Krimoford",
+        "subtitle": "Your trusted source for Ford auto parts in Algiers.",
+        "shopNow": "Shop Now",
+        "featured": "Featured Products",
+        "ymmTitle": "Find Parts for your Ford"
+    },
+    "catalog": {
+        "searchPlaceholder": "Search by name or OEM number...",
+        "filterTitle": "Filter",
+        "noProducts": "No products found.",
+        "addToCart": "Add to Cart",
+        "viewDetails": "View Details",
+        "stock": "In Stock",
+        "outOfStock": "Out of Stock"
+    },
+    "cart": {
+        "title": "Shopping Cart",
+        "empty": "Your cart is empty.",
+        "item": "Item",
+        "price": "Price",
+        "qty": "Quantity",
+        "total": "Total",
+        "subtotal": "Subtotal",
+        "checkout": "Proceed to Checkout",
+        "continueShopping": "Continue Shopping",
+        "remove": "Remove"
+    },
+    "checkout": {
+        "title": "Checkout",
+        "shipping": "Shipping Address",
+        "payment": "Payment Method",
+        "placeOrder": "Place Order",
+        "summary": "Order Summary",
+        "cod": "Cash on Delivery",
+        "bank": "Bank Transfer (CCP/BaridiMob)",
+        "success": "Order placed successfully!",
+        "address": "Address",
+        "city": "City",
+        "postalCode": "Postal Code",
+        "phone": "Phone Number"
+    },
+    "admin": {
+        "loginTitle": "Admin Login",
+        "dashboard": "Dashboard",
+        "inventory": "Inventory",
+        "products": "Products",
+        "orders": "Orders",
+        "addProduct": "Add Product",
+        "editProduct": "Edit Product",
+        "delete": "Delete",
+        "actions": "Actions",
+        "status": "Status",
+        "pending": "Pending",
+        "delivered": "Delivered",
+        "processing": "Processing",
+        "cancelled": "Cancelled"
+    },
+    "productForm": {
+        "titleNew": "Add New Product",
+        "titleEdit": "Edit Product",
+        "sku": "SKU",
+        "oem": "OEM Number",
+        "nameEn": "Name (English)",
+        "nameFr": "Name (French)",
+        "nameAr": "Name (Arabic)",
+        "descriptionEn": "Description (English)",
+        "descriptionFr": "Description (French)",
+        "descriptionAr": "Description (Arabic)",
+        "price": "Price (DA)",
+        "stock": "Stock Quantity",
+        "category": "Category",
+        "image": "Image URL",
+        "compatibility": "Compatibility",
+        "save": "Save Product"
+    },
+    "orderDetails": {
+        "title": "Order Details",
+        "customer": "Customer",
+        "date": "Date",
+        "markDelivered": "Mark as Delivered",
+        "back": "Back to Orders",
+        "items": "Items",
+        "shippingInfo": "Shipping Information",
+        "paymentInfo": "Payment Information"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "save": "Save",
+        "cancel": "Cancel",
+        "details": "Details"
+    }
+}

@@ -1,0 +1,114 @@
+{
+    "nav": {
+        "home": "Accueil",
+        "catalog": "Catalogue",
+        "cart": "Panier",
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "admin": "Admin",
+        "dashboard": "Tableau de Bord",
+        "inventory": "Inventaire",
+        "products": "Produits",
+        "orders": "Commandes"
+    },
+    "home": {
+        "title": "Bienvenue chez Krimoford",
+        "subtitle": "Votre source de confiance pour les pièces Ford à Alger.",
+        "shopNow": "Acheter",
+        "featured": "Produits Vedettes",
+        "ymmTitle": "Trouvez des pièces pour votre Ford"
+    },
+    "catalog": {
+        "searchPlaceholder": "Rechercher par nom ou numéro OEM...",
+        "filterTitle": "Filtrer",
+        "noProducts": "Aucun produit trouvé.",
+        "addToCart": "Ajouter au Panier",
+        "viewDetails": "Voir Détails",
+        "stock": "En Stock",
+        "outOfStock": "Rupture de Stock"
+    },
+    "cart": {
+        "title": "Panier",
+        "empty": "Votre panier est vide.",
+        "item": "Article",
+        "price": "Prix",
+        "qty": "Quantité",
+        "total": "Total",
+        "subtotal": "Sous-total",
+        "checkout": "Passer à la Caisse",
+        "continueShopping": "Continuer vos achats",
+        "remove": "Supprimer"
+    },
+    "checkout": {
+        "title": "Paiement",
+        "shipping": "Adresse de Livraison",
+        "payment": "Méthode de Paiement",
+        "placeOrder": "Commander",
+        "summary": "Résumé de la Commande",
+        "cod": "Paiement à la Livraison",
+        "bank": "Virement Bancaire (CCP/BaridiMob)",
+        "success": "Commande passée avec succès!",
+        "address": "Adresse",
+        "city": "Ville",
+        "postalCode": "Code Postal",
+        "phone": "Numéro de Téléphone"
+    },
+    "admin": {
+        "loginTitle": "Connexion Admin",
+        "dashboard": "Tableau de Bord",
+        "inventory": "Inventaire",
+        "products": "Produits",
+        "orders": "Commandes",
+        "addProduct": "Ajouter Produit",
+        "editProduct": "Modifier Produit",
+        "delete": "Supprimer",
+        "actions": "Actions",
+        "status": "Statut",
+        "pending": "En Attente",
+        "delivered": "Livré",
+        "processing": "En Traitement",
+        "cancelled": "Annulé",
+        "guest": "Invité"
+    },
+    "productForm": {
+        "titleNew": "Ajouter Nouveau Produit",
+        "titleEdit": "Modifier Produit",
+        "sku": "SKU",
+        "oem": "Numéro OEM",
+        "nameEn": "Nom (Anglais)",
+        "nameFr": "Nom (Français)",
+        "nameAr": "Nom (Arabe)",
+        "descriptionEn": "Description (Anglais)",
+        "descriptionFr": "Description (Français)",
+        "descriptionAr": "Description (Arabe)",
+        "price": "Prix (DA)",
+        "stock": "Quantité en Stock",
+        "category": "Catégorie",
+        "image": "URL Image",
+        "compatibility": "Compatibilité",
+        "featured": "Produit Vedette",
+        "save": "Enregistrer Produit"
+    },
+    "orderDetails": {
+        "title": "Détails de la Commande",
+        "customer": "Client",
+        "date": "Date",
+        "markDelivered": "Marquer comme Livré",
+        "back": "Retour aux Commandes",
+        "items": "Articles",
+        "shippingInfo": "Informations de Livraison",
+        "paymentInfo": "Informations de Paiement"
+    },
+    "common": {
+        "loading": "Chargement...",
+        "error": "Une erreur est survenue",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "details": "Détails",
+        "select": "Sélectionner..."
+    },
+    "paymentMethods": {
+        "COD": "Paiement à la Livraison",
+        "BankTransfer": "Virement Bancaire"
+    }
+}

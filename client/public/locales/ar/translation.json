@@ -1,0 +1,107 @@
+{
+    "nav": {
+        "home": "الرئيسية",
+        "catalog": "الكتالوج",
+        "cart": "سلة التسوق",
+        "login": "دخول",
+        "logout": "خروج",
+        "admin": "مشرف",
+        "dashboard": "لوحة التحكم",
+        "inventory": "المخزون",
+        "products": "المنتجات",
+        "orders": "الطلبات"
+    },
+    "home": {
+        "title": "مرحبا بكم في كريمو فورد",
+        "subtitle": "مصدرك الموثوق لقطع غيار فورد في الجزائر.",
+        "shopNow": "تسوق الآن",
+        "featured": "منتجات مميزة",
+        "ymmTitle": "ابحث عن قطع لسيارتك فورد"
+    },
+    "catalog": {
+        "searchPlaceholder": "ابحث بالاسم أو رقم OEM...",
+        "filterTitle": "تصفية",
+        "noProducts": "لم يتم العثور على منتجات.",
+        "addToCart": "أضف إلى السلة",
+        "viewDetails": "عرض التفاصيل",
+        "stock": "متوفر",
+        "outOfStock": "غير متوفر"
+    },
+    "cart": {
+        "title": "سلة التسوق",
+        "empty": "سلة التسوق فارغة.",
+        "item": "منتج",
+        "price": "السعر",
+        "qty": "الكمية",
+        "total": "المجموع",
+        "subtotal": "المجموع الفرعي",
+        "checkout": "إتمام الشراء",
+        "continueShopping": "مواصلة التسوق",
+        "remove": "حذف"
+    },
+    "checkout": {
+        "title": "الدفع",
+        "shipping": "عنوان التوصيل",
+        "payment": "طريقة الدفع",
+        "placeOrder": "تأكيد الطلب",
+        "summary": "ملخص الطلب",
+        "cod": "الدفع عند الاستلام",
+        "bank": "تحويل بنكي (CCP/BaridiMob)",
+        "success": "تم تقديم الطلب بنجاح!",
+        "address": "العنوان",
+        "city": "المدينة",
+        "postalCode": "الرمز البريدي",
+        "phone": "رقم الهاتف"
+    },
+    "admin": {
+        "loginTitle": "دخول المشرف",
+        "dashboard": "لوحة التحكم",
+        "inventory": "المخزون",
+        "products": "المنتجات",
+        "orders": "الطلبات",
+        "addProduct": "إضافة منتج",
+        "editProduct": "تعديل منتج",
+        "delete": "حذف",
+        "actions": "إجراءات",
+        "status": "الحالة",
+        "pending": "قيد الانتظار",
+        "delivered": "تم التوصيل",
+        "processing": "قيد المعالجة",
+        "cancelled": "ملغى"
+    },
+    "productForm": {
+        "titleNew": "إضافة منتج جديد",
+        "titleEdit": "تعديل منتج",
+        "sku": "SKU",
+        "oem": "رقم OEM",
+        "nameEn": "الاسم (إنجليزي)",
+        "nameFr": "الاسم (فرنسي)",
+        "nameAr": "الاسم (عربي)",
+        "descriptionEn": "الوصف (إنجليزي)",
+        "descriptionFr": "الوصف (فرنسي)",
+        "descriptionAr": "الوصف (عربي)",
+        "price": "السعر (دج)",
+        "stock": "الكمية في المخزون",
+        "category": "الفئة",
+        "image": "رابط الصورة",
+        "compatibility": "التوافق",
+        "save": "حفظ المنتج"
+    },
+    "orderDetails": {
+        "title": "تفاصيل الطلب",
+        "customer": "العميل",
+        "date": "التاريخ",
+        "markDelivered": "تحديد كموصل",
+        "back": "العودة للطلبات",
+        "items": "المنتجات",
+        "shippingInfo": "معلومات الشحن",
+        "paymentInfo": "معلومات الدفع"
+    },
+    "common": {
+        "loading": "جار التحميل...",
+        "error": "حدث خطأ",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "details": "تفاصيل"
+    }
+}
