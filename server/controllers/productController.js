@@ -16,6 +16,11 @@ const getProducts = async (req, res) => {
                 { 'name.en': { $regex: keywordStr, $options: 'i' } },
                 { 'name.fr': { $regex: keywordStr, $options: 'i' } },
                 { 'name.ar': { $regex: keywordStr, $options: 'i' } },
+                { 'compatibility.model': { $regex: keywordStr, $options: 'i' } },
+                // Check if keyword is numeric for year search
+                ...(
+                    !isNaN(keywordStr) ? [{ 'compatibility.year': Number(keywordStr) }] : []
+                )
             ]
         }
         : {};
@@ -26,11 +31,22 @@ const getProducts = async (req, res) => {
     }
 
     // Filter by Year and Model (YMM Lookups)
-    if (req.query.year) {
-        keyword['compatibility.year'] = Number(req.query.year);
-    }
-    if (req.query.model) {
-        keyword['compatibility.model'] = req.query.model;
+    if (req.query.year && req.query.model) {
+        // Strict Match: Must match BOTH model and year in the SAME compatibility entry
+        keyword.compatibility = {
+            $elemMatch: {
+                model: req.query.model,
+                year: Number(req.query.year)
+            }
+        };
+    } else {
+        // Loose Match: Match either criterion independently if only one is present
+        if (req.query.year) {
+            keyword['compatibility.year'] = Number(req.query.year);
+        }
+        if (req.query.model) {
+            keyword['compatibility.model'] = req.query.model;
+        }
     }
 
     const count = await Product.countDocuments({ ...keyword });
@@ -38,7 +54,7 @@ const getProducts = async (req, res) => {
         .limit(pageSize)
         .skip(pageSize * (page - 1));
 
-    res.json({ products, page, pages: Math.ceil(count / pageSize) });
+    res.json({ products, page, pages: Math.ceil(count / pageSize), count });
 };
 
 // @desc    Fetch single product

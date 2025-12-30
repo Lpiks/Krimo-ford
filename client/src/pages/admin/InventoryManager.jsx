@@ -63,13 +63,15 @@ const InventoryManager = () => {
         });
     };
 
+    const [keyword, setKeyword] = useState('');
+
     useEffect(() => {
         fetchProducts();
     }, []);
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (search = '') => {
         try {
-            const { data } = await axios.get('/api/products');
+            const { data } = await axios.get(`/api/products?keyword=${search}`);
             setProducts(data.products);
             setLoading(false);
         } catch (error) {
@@ -78,12 +80,66 @@ const InventoryManager = () => {
         }
     };
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchProducts(keyword);
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 className="logo-text" style={{ fontSize: '2.5rem', color: 'var(--ford-blue)' }}>{t('admin.inventory')}</h1>
-                <Link to="/admin/product/new" className="btn btn-primary">{t('admin.addProduct')}</Link>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <Link to="/admin/categories" className="btn" style={{ backgroundColor: '#e5e7eb', color: '#374151' }}>{t('admin.categories', 'Categories')}</Link>
+                    <Link to="/admin/carmodels" className="btn" style={{ backgroundColor: '#e5e7eb', color: '#374151' }}>{t('admin.carModels', 'Car Models')}</Link>
+                    <Link to="/admin/product/new" className="btn btn-primary">{t('admin.addProduct')}</Link>
+                </div>
             </div>
+
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
+                <input
+                    type="text"
+                    placeholder="Search by Name, OEM, Car Model (e.g. Golf) or Year (e.g. 2015)..."
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    style={{
+                        padding: '0.75rem 1rem',
+                        borderRadius: '8px',
+                        border: '1px solid #d1d5db',
+                        flex: 1,
+                        fontSize: '1rem',
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                />
+                <button
+                    type="submit"
+                    style={{
+                        padding: '0.75rem 2rem',
+                        backgroundColor: 'var(--ford-blue)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '1rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                    }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Search
+                </button>
+            </form>
 
             <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>

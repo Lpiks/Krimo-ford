@@ -3,8 +3,12 @@ import { useTranslation } from 'react-i18next';
 import YMMLookup from '../../components/shared/YMMLookup';
 import { Link } from 'react-router-dom';
 
+import FeaturesSection from '../../components/home/FeaturesSection';
+import useScrollAnimation from '../../hooks/useScrollAnimation';
+
 const HomePage = () => {
     const { t } = useTranslation();
+    useScrollAnimation();
 
     return (
         <div>
@@ -25,7 +29,7 @@ const HomePage = () => {
                 justifyContent: 'center'
             }}>
                 <div className="container">
-                    <h1 style={{
+                    <h1 className="animate-on-scroll" style={{
                         fontSize: '3.5rem',
                         marginBottom: '1rem',
                         color: 'white',
@@ -34,7 +38,7 @@ const HomePage = () => {
                     }}>
                         {t('home.heroTitle', 'Genuine Ford Parts')}
                     </h1>
-                    <p style={{
+                    <p className="animate-on-scroll delay-100" style={{
                         fontSize: '1.5rem',
                         marginBottom: '3rem',
                         maxWidth: '700px',
@@ -45,16 +49,19 @@ const HomePage = () => {
                         {t('home.heroSubtitle', 'The highest quality parts for your vehicle, delivered directly to you in Algiers.')}
                     </p>
 
-                    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                    <div className="animate-on-scroll delay-200" style={{ maxWidth: '900px', margin: '0 auto' }}>
                         <YMMLookup />
                     </div>
                 </div>
             </section>
 
+            {/* Features Section */}
+            <FeaturesSection />
+
             {/* Featured Parts / Categories */}
             <section className="container" style={{ padding: '4rem 1rem' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: 'var(--ford-blue)' }}>{t('home.featured', 'Popular Categories')}</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
+                <h2 className="animate-on-scroll" style={{ textAlign: 'center', marginBottom: '2rem', color: 'var(--ford-blue)' }}>{t('home.featured', 'Popular Categories')}</h2>
+                <div className="animate-on-scroll delay-100" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
                     {['Brakes', 'Filters', 'Suspension', 'Engine'].map((cat) => (
                         <Link to={`/catalog?category=${cat}`} key={cat} style={{
                             display: 'block',

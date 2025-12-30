@@ -4,6 +4,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
+import ModernSelect from '../../components/shared/ModernSelect';
 
 const ProductFormPage = () => {
     const { t } = useTranslation();
@@ -14,7 +15,7 @@ const ProductFormPage = () => {
     const [sku, setSku] = useState('');
     const [category, setCategory] = useState('');
     const [stock, setStock] = useState(0);
-    const [image, setImage] = useState('');
+    const [images, setImages] = useState([]); // Changed from single image string to array
     const [compatibility, setCompatibility] = useState([]);
     const [tempYear, setTempYear] = useState('');
     const [tempModel, setTempModel] = useState('');
@@ -26,7 +27,54 @@ const ProductFormPage = () => {
     const { userInfo } = useAuth();
     const isEditMode = !!id;
 
+    const commonInputStyle = {
+        width: '100%',
+        padding: '0.75rem 1rem',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        fontSize: '0.95rem',
+        backgroundColor: 'white',
+        color: '#1f2937',
+        outline: 'none',
+        transition: 'all 0.2s',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+    };
+
+    const labelStyle = {
+        display: 'block',
+        marginBottom: '0.5rem',
+        color: '#4b5563',
+        fontSize: '0.9rem',
+        fontWeight: '600'
+    };
+
+    const sectionStyle = {
+        backgroundColor: 'white',
+        padding: '2rem',
+        borderRadius: '16px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+        border: '1px solid rgba(0,0,0,0.05)',
+        marginBottom: '2rem'
+    };
+
+    const [availableCategories, setAvailableCategories] = useState([]);
+    const [availableCarModels, setAvailableCarModels] = useState([]);
+
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [catsRes, carsRes] = await Promise.all([
+                    axios.get('/api/categories'),
+                    axios.get('/api/carmodels')
+                ]);
+                setAvailableCategories(catsRes.data);
+                setAvailableCarModels(carsRes.data);
+            } catch (error) {
+                console.error("Failed to fetch lists", error);
+            }
+        };
+        fetchData();
+
         if (isEditMode) {
             const fetchProduct = async () => {
                 try {
@@ -38,7 +86,8 @@ const ProductFormPage = () => {
                     setSku(data.sku);
                     setCategory(data.category);
                     setStock(data.stock);
-                    setImage(data.images && data.images[0] ? data.images[0] : '');
+                    // Ensure images is always an array
+                    setImages(data.images && Array.isArray(data.images) ? data.images : []);
                     setCompatibility(data.compatibility || []);
                     setIsFeatured(data.isFeatured || false);
                 } catch (error) {
@@ -59,7 +108,7 @@ const ProductFormPage = () => {
             sku,
             category,
             stock,
-            images: [image],
+            images, // Sending the array directly
             compatibility,
             isFeatured
         };
@@ -91,10 +140,10 @@ const ProductFormPage = () => {
         }
     };
 
-
-
     const uploadFileHandler = async (e) => {
         const file = e.target.files[0];
+        if (!file) return;
+
         const formData = new FormData();
         formData.append('image', file);
         setUploading(true);
@@ -114,7 +163,8 @@ const ProductFormPage = () => {
             };
 
             const { data } = await axios.post('/api/upload', formData, config);
-            setImage(data.url); // Fix: Extract URL from response object
+            // Append new image URL to the array
+            setImages(prev => [...prev, data.url]);
             setUploading(false);
         } catch (error) {
             console.error(error);
@@ -125,212 +175,424 @@ const ProductFormPage = () => {
         }
     };
 
+    const removeImage = (indexToRemove) => {
+        setImages(images.filter((_, index) => index !== indexToRemove));
+    };
+
     return (
-        <div style={{ padding: '2rem' }}>
-            <Link to="/admin/products" className="btn btn-light" style={{ marginBottom: '1rem', display: 'inline-block' }}>{t('common.cancel')}</Link>
-            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: 'var(--shadow-sm)', maxWidth: '800px', margin: '0 auto' }}>
-                <h1 style={{ marginBottom: '2rem', color: 'var(--ford-blue)' }}>{isEditMode ? t('productForm.titleEdit') : t('productForm.titleNew')}</h1>
+        <div style={{ padding: '2rem', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <h1 style={{ color: '#1f2937', fontSize: '1.8rem', fontWeight: 'bold' }}>
+                        {isEditMode ? t('productForm.titleEdit') : t('productForm.titleNew')}
+                    </h1>
+                    <Link to="/admin/products" style={{
+                        padding: '0.5rem 1rem',
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        color: '#4b5563',
+                        textDecoration: 'none',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                    }}>
+                        {t('common.cancel')}
+                    </Link>
+                </div>
+
                 <form onSubmit={submitHandler}>
                     {/* Basic Info */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.oem')}</label>
-                            <input type="text" value={oemNumber} onChange={(e) => setOemNumber(e.target.value)} required style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }} />
-                        </div>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.sku')}</label>
-                            <input type="text" value={sku} onChange={(e) => setSku(e.target.value)} style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }} />
+                    <div style={sectionStyle}>
+                        <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--ford-blue)', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Basic Information</h2>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.oem')}</label>
+                                <input
+                                    type="text"
+                                    value={oemNumber}
+                                    onChange={(e) => setOemNumber(e.target.value)}
+                                    required
+                                    style={commonInputStyle}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.sku')}</label>
+                                <input
+                                    type="text"
+                                    value={sku}
+                                    onChange={(e) => setSku(e.target.value)}
+                                    style={commonInputStyle}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Localized Names */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.nameEn')}</label>
-                            <input type="text" value={name.en} onChange={(e) => setName({ ...name, en: e.target.value })} required style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }} />
+                    {/* Localized Details */}
+                    <div style={sectionStyle}>
+                        <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--ford-blue)', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Product Details (Multilingual)</h2>
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={labelStyle}>{t('productForm.nameEn')}</label>
+                            <input
+                                type="text"
+                                value={name.en}
+                                onChange={(e) => setName({ ...name, en: e.target.value })}
+                                required
+                                style={commonInputStyle}
+                                placeholder="Product Name in English"
+                                onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                            />
                         </div>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.nameFr')}</label>
-                            <input type="text" value={name.fr} onChange={(e) => setName({ ...name, fr: e.target.value })} style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }} />
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.nameFr')}</label>
+                                <input
+                                    type="text"
+                                    value={name.fr}
+                                    onChange={(e) => setName({ ...name, fr: e.target.value })}
+                                    style={{ ...commonInputStyle }}
+                                    placeholder="Nom du produit"
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.nameAr')}</label>
+                                <input
+                                    type="text"
+                                    value={name.ar}
+                                    onChange={(e) => setName({ ...name, ar: e.target.value })}
+                                    style={{ ...commonInputStyle, direction: 'rtl' }}
+                                    placeholder="اسم المنتج"
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
                         </div>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.nameAr')}</label>
-                            <input type="text" value={name.ar} onChange={(e) => setName({ ...name, ar: e.target.value })} style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px', direction: 'rtl' }} />
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={labelStyle}>{t('productForm.descriptionEn')}</label>
+                            <textarea
+                                value={description.en}
+                                onChange={(e) => setDescription({ ...description, en: e.target.value })}
+                                style={{ ...commonInputStyle, minHeight: '100px', resize: 'vertical' }}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                            />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.descriptionFr')}</label>
+                                <textarea
+                                    value={description.fr}
+                                    onChange={(e) => setDescription({ ...description, fr: e.target.value })}
+                                    style={{ ...commonInputStyle, minHeight: '100px', resize: 'vertical' }}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.descriptionAr')}</label>
+                                <textarea
+                                    value={description.ar}
+                                    onChange={(e) => setDescription({ ...description, ar: e.target.value })}
+                                    style={{ ...commonInputStyle, minHeight: '100px', resize: 'vertical', direction: 'rtl' }}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Localized Descriptions */}
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.descriptionEn')}</label>
-                        <textarea value={description.en} onChange={(e) => setDescription({ ...description, en: e.target.value })} style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px' }} />
-                    </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.descriptionFr')}</label>
-                        <textarea value={description.fr} onChange={(e) => setDescription({ ...description, fr: e.target.value })} style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px' }} />
-                    </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.descriptionAr')}</label>
-                        <textarea value={description.ar} onChange={(e) => setDescription({ ...description, ar: e.target.value })} style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px', minHeight: '80px', direction: 'rtl' }} />
-                    </div>
+                    {/* Inventory & Category */}
+                    <div style={sectionStyle}>
+                        <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--ford-blue)', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Inventory & Categorization</h2>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.price')}</label>
-                            <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }} />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.price')}</label>
+                                <input
+                                    type="number"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    required
+                                    style={commonInputStyle}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
+                            <div>
+                                <label style={labelStyle}>{t('productForm.stock', 'Stock Quantity')}</label>
+                                <input
+                                    type="number"
+                                    value={stock}
+                                    onChange={(e) => setStock(e.target.value)}
+                                    required
+                                    style={commonInputStyle}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
                         </div>
+
                         <div style={{ marginBottom: '1rem' }}>
-                            <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} required style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }} />
+                            <label style={labelStyle}>{t('productForm.category')}</label>
+
+                            {/* Quick Select Pills */}
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                                {availableCategories.slice(0, 8).map(cat => (
+                                    <button
+                                        key={cat._id}
+                                        type="button"
+                                        onClick={() => setCategory(cat.name)}
+                                        style={{
+                                            padding: '0.4rem 0.8rem',
+                                            borderRadius: '999px',
+                                            border: category === cat.name ? '1px solid var(--ford-blue)' : '1px solid #e5e7eb',
+                                            backgroundColor: category === cat.name ? 'var(--ford-blue)' : 'white',
+                                            color: category === cat.name ? 'white' : '#4b5563',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem',
+                                            fontWeight: '500',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <ModernSelect
+                                options={availableCategories.map(cat => ({ value: cat.name, label: cat.name }))}
+                                value={category}
+                                onChange={(val) => setCategory(val)}
+                                placeholder={t('common.select')}
+                            />
+                        </div>
+
+                        <div style={{ marginTop: '1.5rem' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
+                                <div style={{ position: 'relative', width: '20px', height: '20px' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={isFeatured}
+                                        onChange={(e) => setIsFeatured(e.target.checked)}
+                                        style={{ width: '100%', height: '100%', cursor: 'pointer', opacity: 0.5 }}
+                                    />
+                                </div>
+                                <span style={{ color: '#374151', fontWeight: '500' }}>{t('productForm.featured')}</span>
+                            </label>
                         </div>
                     </div>
 
                     {/* Compatibility Section */}
-                    <div style={{ marginBottom: '2rem', border: '1px solid #eee', padding: '1rem', borderRadius: '8px' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>{t('productForm.compatibility', 'Vehicle Compatibility')}</label>
+                    <div style={sectionStyle}>
+                        <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--ford-blue)', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>{t('productForm.compatibility', 'Vehicle Compatibility')}</h2>
 
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                            {['Fiesta', 'Focus', 'Ranger', 'Kuga', 'Ecosport', 'Everest', 'Mustang', 'Transit'].map(m => (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                            {availableCarModels.slice(0, 10).map(m => (
                                 <button
-                                    key={m}
+                                    key={m._id}
                                     type="button"
-                                    onClick={() => setTempModel(m)}
+                                    onClick={() => setTempModel(m.name)}
                                     style={{
                                         padding: '0.5rem 1rem',
-                                        borderRadius: '50px',
-                                        border: '1px solid #003478',
-                                        backgroundColor: tempModel === m ? '#003478' : 'white',
-                                        color: tempModel === m ? 'white' : '#003478',
+                                        borderRadius: '999px',
+                                        border: tempModel === m.name ? '1px solid #003478' : '1px solid #d1d5db',
+                                        backgroundColor: tempModel === m.name ? '#003478' : 'white',
+                                        color: tempModel === m.name ? 'white' : '#4b5563',
                                         cursor: 'pointer',
                                         fontSize: '0.9rem',
                                         fontWeight: '500',
                                         transition: 'all 0.2s'
                                     }}
                                 >
-                                    {m}
+                                    {m.name}
                                 </button>
                             ))}
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                            <input
-                                type="number"
-                                placeholder={t('productForm.year', 'Year')}
-                                value={tempYear}
-                                onChange={(e) => setTempYear(e.target.value)}
-                                style={{ flex: 1, padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                            />
-                            <select
-                                value={tempModel}
-                                onChange={(e) => setTempModel(e.target.value)}
-                                style={{ flex: 1, padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
+                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'flex-start' }}>
+                            <div style={{ flex: 1 }}>
+                                <input
+                                    type="number"
+                                    placeholder={t('productForm.year', 'Year')}
+                                    value={tempYear}
+                                    onChange={(e) => setTempYear(e.target.value)}
+                                    style={commonInputStyle}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--ford-blue)'}
+                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <ModernSelect
+                                    options={availableCarModels.map(m => ({ value: m.name, label: m.name }))}
+                                    value={tempModel}
+                                    onChange={(val) => setTempModel(val)}
+                                    placeholder={t('common.selectModel', 'Select Model')}
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (tempYear && tempModel) {
+                                        setCompatibility([...compatibility, { year: tempYear, model: tempModel }]);
+                                        setTempYear('');
+                                        setTempModel('');
+                                    }
+                                }}
+                                style={{
+                                    backgroundColor: 'var(--ford-blue)',
+                                    color: 'white',
+                                    padding: '0.75rem 1.5rem',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    height: '42px', // Match input height approx
+                                    display: 'flex', alignItems: 'center'
+                                }}
                             >
-                                <option value="">{t('common.selectModel', 'Select Model')}</option>
-                                <option value="Fiesta">Fiesta</option>
-                                <option value="Focus">Focus</option>
-                                <option value="Ranger">Ranger</option>
-                                <option value="Kuga">Kuga</option>
-                                <option value="Ecosport">Ecosport</option>
-                                <option value="Everest">Everest</option>
-                                <option value="Mustang">Mustang</option>
-                                <option value="Transit">Transit</option>
-                            </select>
-                            <button type="button" className="btn btn-primary" onClick={() => {
-                                if (tempYear && tempModel) {
-                                    setCompatibility([...compatibility, { year: tempYear, model: tempModel }]);
-                                    setTempYear('');
-                                    setTempModel('');
-                                }
-                            }}>{t('common.add', 'Add')}</button>
+                                {t('common.add', 'Add')}
+                            </button>
                         </div>
 
                         {compatibility.length > 0 && (
-                            <ul style={{ listStyle: 'none', padding: 0 }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                                 {compatibility.map((item, index) => (
-                                    <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8f9fa', padding: '0.5rem', marginBottom: '0.5rem', borderRadius: '4px' }}>
-                                        <span>Ford {item.model} ({item.year})</span>
+                                    <div key={index} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        backgroundColor: '#f3f4f6',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '8px',
+                                        border: '1px solid #e5e7eb',
+                                        fontSize: '0.9rem',
+                                        color: '#374151'
+                                    }}>
+                                        <span style={{ fontWeight: '600', marginRight: '0.5rem' }}>Ford {item.model}</span>
+                                        <span style={{ color: '#6b7280' }}>({item.year})</span>
                                         <button type="button" onClick={() => {
                                             setCompatibility(compatibility.filter((_, i) => i !== index));
-                                        }} style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}>×</button>
-                                    </li>
+                                        }} style={{
+                                            marginLeft: '0.75rem',
+                                            color: '#ef4444',
+                                            border: 'none',
+                                            background: 'none',
+                                            cursor: 'pointer',
+                                            fontSize: '1.1rem',
+                                            display: 'flex', alignItems: 'center'
+                                        }}>×</button>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         )}
                     </div>
 
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('productForm.category')}</label>
+                    {/* Image Upload - Multi Image & Compact */}
+                    <div style={sectionStyle}>
+                        <label style={{ display: 'block', marginBottom: '1rem', fontWeight: 'bold', fontSize: '1.1rem', color: '#1f2937' }}>Image field</label>
 
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                            {['Brakes', 'Filters', 'Suspension', 'Engine', 'Electrical', 'Body', 'Accessories'].map(cat => (
-                                <button
-                                    key={cat}
-                                    type="button"
-                                    onClick={() => setCategory(cat)}
-                                    style={{
-                                        padding: '0.4rem 0.8rem',
-                                        borderRadius: '20px',
-                                        border: '1px solid #666',
-                                        backgroundColor: category === cat ? '#666' : 'white',
-                                        color: category === cat ? 'white' : '#666',
-                                        cursor: 'pointer',
-                                        fontSize: '0.9rem'
-                                    }}
-                                >
-                                    {cat}
-                                </button>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                            {/* Existing Images */}
+                            {images.map((imgUrl, index) => (
+                                <div key={index} style={{ position: 'relative', width: '150px', height: '150px', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', border: '1px solid #e5e7eb' }}>
+                                    <img src={imgUrl} alt={`Product ${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        style={{
+                                            position: 'absolute', top: 5, right: 5,
+                                            backgroundColor: '#ef4444', color: 'white',
+                                            border: 'none', borderRadius: '50%',
+                                            width: '24px', height: '24px',
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                        }}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
                             ))}
+
+                            {/* Upload Button Block */}
+                            <div className="file-upload-wrapper"
+                                style={{
+                                    position: 'relative',
+                                    width: '150px',
+                                    height: '150px',
+                                    border: '2px dashed #d1d5db',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#f9fafb',
+                                    transition: 'all 0.2s',
+                                    cursor: 'pointer'
+                                }}
+                                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--ford-blue)'; e.currentTarget.style.backgroundColor = '#eff6ff'; }}
+                                onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+                                onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#d1d5db'; e.currentTarget.style.backgroundColor = '#f9fafb'; }}
+                            >
+                                <input
+                                    type="file"
+                                    onChange={uploadFileHandler}
+                                    accept="image/*"
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        opacity: 0,
+                                        cursor: 'pointer',
+                                    }}
+                                />
+                                {uploading ? (
+                                    <div style={{ color: 'var(--ford-blue)', fontSize: '0.9rem', fontWeight: 'bold' }}>...</div>
+                                ) : (
+                                    <>
+                                        <div style={{ fontSize: '2rem', color: '#9ca3af', marginBottom: '0.2rem' }}>+</div>
+                                        <span style={{ fontSize: '0.8rem', color: '#6b7280', fontWeight: '500' }}>Add Image</span>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                        <select value={category} onChange={(e) => setCategory(e.target.value)} required style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}>
-                            <option value="">{t('common.select')}</option>
-                            <option value="Brakes">Brakes</option>
-                            <option value="Filters">Filters</option>
-                            <option value="Suspension">Suspension</option>
-                            <option value="Engine">Engine</option>
-                            <option value="Electrical">Electrical</option>
-                            <option value="Body">Body</option>
-                            <option value="Accessories">Accessories</option>
-                        </select>
                     </div>
 
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <input type="checkbox" checked={isFeatured} onChange={(e) => setIsFeatured(e.target.checked)} />
-                            {t('productForm.featured')}
-                        </label>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                        <Link to="/admin/products" style={{
+                            padding: '0.75rem 1.5rem',
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            color: '#374151',
+                            textDecoration: 'none',
+                            fontWeight: '600',
+                            transition: 'all 0.2s'
+                        }}>
+                            {t('common.cancel')}
+                        </Link>
+                        <button type="submit" className="btn btn-primary" style={{
+                            padding: '0.75rem 2rem',
+                            fontSize: '1rem',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px rgba(0, 51, 153, 0.2)'
+                        }}>
+                            {t('common.save')}
+                        </button>
                     </div>
-
-                    <div style={{ marginBottom: '2rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>{t('productForm.image')}</label>
-
-                        <div className="file-upload-wrapper">
-                            <input
-                                type="file"
-                                className="file-upload-input"
-                                onChange={uploadFileHandler}
-                                accept="image/*"
-                            />
-                            {image ? (
-                                <img src={image} alt="Preview" className="file-upload-preview" />
-                            ) : (
-                                <div className="file-upload-content">
-                                    <div className="upload-icon">📁</div>
-                                    <p>{t('common.select') || 'Click or Drag to Upload'}</p>
-                                </div>
-                            )}
-                            {uploading && (
-                                <div className="loading-overlay">
-                                    {t('common.loading')}
-                                </div>
-                            )}
-                        </div>
-                        {/* Hidden input to store value for form submission if needed, or just leverage state */}
-                    </div>
-
-                    <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>{t('common.save')}</button>
                 </form>
             </div>
         </div>
     );
 };
-
 
 export default ProductFormPage;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../../components/shared/ProductCard';
 
@@ -8,13 +9,32 @@ const CatalogPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const categoryParam = searchParams.get('category');
+
+    const categories = ['Brakes', 'Filters', 'Suspension', 'Engine', 'Electrical', 'Body', 'Accessories'];
+
+    const handleCategoryClick = (cat) => {
+        if (cat) {
+            navigate(`/catalog?category=${cat}`);
+        } else {
+            navigate('/catalog');
+        }
+    };
 
     const [keyword, setKeyword] = useState('');
 
     const fetchProducts = async (searchKeyword = '') => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`/api/products?keyword=${searchKeyword}`);
+            // Build query string
+            let query = `/api/products?keyword=${searchKeyword}`;
+            if (categoryParam) {
+                query += `&category=${categoryParam}`;
+            }
+
+            const { data } = await axios.get(query);
             setProducts(data.products);
             setLoading(false);
         } catch (err) {
@@ -24,8 +44,8 @@ const CatalogPage = () => {
     };
 
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        fetchProducts(keyword);
+    }, [categoryParam]); // Re-fetch when category changes
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -34,7 +54,50 @@ const CatalogPage = () => {
 
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
-            <h1 style={{ color: 'var(--ford-blue)', marginBottom: '1.5rem', textAlign: 'center' }}>{t('nav.catalog')}</h1>
+            <h1 style={{ color: 'var(--ford-blue)', marginBottom: '1.5rem', textAlign: 'center' }}>
+                {categoryParam ? `${t('nav.catalog')} - ${categoryParam}` : t('nav.catalog')}
+            </h1>
+
+            {/* Category Filter Buttons */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+                <button
+                    onClick={() => handleCategoryClick(null)}
+                    style={{
+                        padding: '0.6rem 1.2rem',
+                        borderRadius: '999px',
+                        border: !categoryParam ? '1px solid var(--ford-blue)' : '1px solid #e5e7eb',
+                        backgroundColor: !categoryParam ? 'var(--ford-blue)' : 'white',
+                        color: !categoryParam ? 'white' : '#4b5563',
+                        cursor: 'pointer',
+                        fontWeight: '600',
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                    }}
+                >
+                    {t('common.all', 'All')}
+                </button>
+                {categories.map((cat) => (
+                    <button
+                        key={cat}
+                        onClick={() => handleCategoryClick(cat)}
+                        style={{
+                            padding: '0.6rem 1.2rem',
+                            borderRadius: '999px',
+                            border: categoryParam === cat ? '1px solid var(--ford-blue)' : '1px solid #e5e7eb',
+                            backgroundColor: categoryParam === cat ? 'var(--ford-blue)' : 'white',
+                            color: categoryParam === cat ? 'white' : '#4b5563',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            fontSize: '0.95rem',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                        }}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
                 <form onSubmit={submitHandler} className="search-container" style={{ width: '100%', maxWidth: '500px' }}>

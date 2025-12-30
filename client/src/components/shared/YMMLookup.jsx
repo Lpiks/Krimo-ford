@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,10 +10,33 @@ const YMMLookup = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (year && model) {
-            navigate(`/catalog?year=${year}&model=${model}`);
+        const params = new URLSearchParams();
+        if (year) params.append('year', year);
+        if (model) params.append('model', model);
+
+        if (params.toString()) {
+            navigate(`/catalog?${params.toString()}`);
         }
     };
+
+    const [years] = useState(Array.from({ length: 26 }, (_, i) => 2025 - i));
+    const [carModels, setCarModels] = useState([]);
+
+    useEffect(() => {
+        const fetchModels = async () => {
+            try {
+                // We use dynamic import for axios or fetch here since it might not be imported
+                // But axios is standard here. Assuming global or need to import?
+                // YMMLookup imports: React, translation, useNavigate. Need to add axios/useEffect.
+                const res = await fetch('/api/carmodels');
+                const data = await res.json();
+                setCarModels(data.map(m => m.name));
+            } catch (err) {
+                console.error("Failed to load models", err);
+            }
+        };
+        fetchModels();
+    }, []);
 
     return (
         <div className="ymm-lookup" style={{
@@ -30,22 +53,22 @@ const YMMLookup = () => {
                 <select
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    style={{ padding: '0.8rem', borderRadius: '4px', border: 'none', flex: 1 }}
+                    style={{ padding: '0.8rem', borderRadius: '4px', border: 'none', flex: 1, minWidth: '150px' }}
                 >
                     <option value="">{t('ymm.selectYear', 'Select Year')}</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
+                    {years.map(y => (
+                        <option key={y} value={y}>{y}</option>
+                    ))}
                 </select>
                 <select
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    style={{ padding: '0.8rem', borderRadius: '4px', border: 'none', flex: 1 }}
+                    style={{ padding: '0.8rem', borderRadius: '4px', border: 'none', flex: 1, minWidth: '150px' }}
                 >
                     <option value="">{t('ymm.selectModel', 'Select Model')}</option>
-                    <option value="Fiesta">Fiesta</option>
-                    <option value="Focus">Focus</option>
-                    <option value="Ranger">Ranger</option>
+                    {carModels.map(m => (
+                        <option key={m} value={m}>{m}</option>
+                    ))}
                 </select>
                 <button type="submit" className="btn" style={{ backgroundColor: 'white', color: 'var(--ford-blue)' }}>
                     {t('ymm.search', 'Search')}

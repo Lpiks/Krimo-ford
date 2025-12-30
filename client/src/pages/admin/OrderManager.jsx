@@ -32,6 +32,10 @@ const OrderManager = () => {
         };
 
         fetchOrders();
+
+        const interval = setInterval(fetchOrders, 10000); // Refresh every 10 seconds
+
+        return () => clearInterval(interval);
     }, [userInfo]);
 
     return (
