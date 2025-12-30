@@ -62,7 +62,7 @@ const OrderManager = () => {
                                 <tr key={order._id} style={{ borderTop: '1px solid #eee' }}>
                                     <td style={{ padding: '1rem', fontSize: '0.9rem' }}>{order._id.substring(20, 24)}</td>
                                     <td style={{ padding: '1rem' }}>{order.createdAt.substring(0, 10)}</td>
-                                    <td style={{ padding: '1rem' }}>{order.user ? order.user.name : t('admin.guest')}</td>
+                                    <td style={{ padding: '1rem' }}>{order.shippingAddress?.fullName || (order.user ? order.user.name : t('admin.guest'))}</td>
                                     <td style={{ padding: '1rem', fontWeight: 'bold' }}>{order.totalPrice} DA</td>
                                     <td style={{ padding: '1rem' }}>{order.shippingAddress.city}</td>
                                     <td style={{ padding: '1rem' }}>{t(`paymentMethods.${order.paymentMethod}`, order.paymentMethod)}</td>
@@ -70,11 +70,14 @@ const OrderManager = () => {
                                         <span style={{
                                             padding: '0.25rem 0.5rem',
                                             borderRadius: '4px',
-                                            backgroundColor: order.isDelivered ? '#d4edda' : '#fff3cd',
-                                            color: order.isDelivered ? '#155724' : '#856404',
-                                            fontSize: '0.85rem'
+                                            backgroundColor: order.status === 'Accepted' || order.status === 'Delivered' ? '#d1fae5' :
+                                                order.status === 'Cancelled' ? '#fee2e2' : '#fef3c7',
+                                            color: order.status === 'Accepted' || order.status === 'Delivered' ? '#065f46' :
+                                                order.status === 'Cancelled' ? '#991b1b' : '#92400e',
+                                            fontSize: '0.85rem',
+                                            fontWeight: '600'
                                         }}>
-                                            {order.isDelivered ? t('admin.delivered') : t('admin.pending')}
+                                            {order.status || (order.isDelivered ? 'Delivered' : 'Pending')}
                                         </span>
                                     </td>
                                     <td style={{ padding: '1rem' }}>

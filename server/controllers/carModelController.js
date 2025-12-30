@@ -54,8 +54,27 @@ const deleteCarModel = async (req, res) => {
     }
 };
 
+// @desc    Delete multiple car models
+// @route   POST /api/carmodels/bulk-delete
+// @access  Private/Admin
+const deleteCarModels = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            res.status(400);
+            throw new Error('No IDs provided');
+        }
+
+        await CarModel.deleteMany({ _id: { $in: ids } });
+        res.json({ message: 'Car models deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getCarModels,
     createCarModel,
     deleteCarModel,
+    deleteCarModels,
 };

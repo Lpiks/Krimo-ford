@@ -49,6 +49,11 @@ const getProducts = async (req, res) => {
         }
     }
 
+    // Filter by Fuel Type
+    if (req.query.fuelType && req.query.fuelType !== 'All') {
+        keyword.fuelType = { $in: [req.query.fuelType, 'All'] };
+    }
+
     const count = await Product.countDocuments({ ...keyword });
     const products = await Product.find({ ...keyword })
         .limit(pageSize)
@@ -100,7 +105,11 @@ const createProduct = async (req, res) => {
         oemNumber: 'OEM-' + Date.now(),
         sku: 'SKU-' + Date.now(),
         description: { en: 'Sample description', fr: 'Description exemple', ar: 'وصف نموذج' },
-        compatibility: []
+        oemNumber: 'OEM-' + Date.now(),
+        sku: 'SKU-' + Date.now(),
+        description: { en: 'Sample description', fr: 'Description exemple', ar: 'وصف نموذج' },
+        compatibility: [],
+        fuelType: 'All'
     });
 
     const createdProduct = await product.save();
@@ -120,7 +129,8 @@ const updateProduct = async (req, res) => {
         stock,
         oemNumber,
         sku,
-        compatibility
+        compatibility,
+        fuelType
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -135,6 +145,7 @@ const updateProduct = async (req, res) => {
         product.oemNumber = oemNumber || product.oemNumber;
         product.sku = sku || product.sku;
         product.compatibility = compatibility || product.compatibility;
+        product.fuelType = fuelType || product.fuelType;
 
         const updatedProduct = await product.save();
         res.json(updatedProduct);

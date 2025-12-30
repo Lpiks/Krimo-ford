@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 
 const ProductCard = ({ product }) => {
     const { t, i18n } = useTranslation();
     const { addToCart } = useCart();
     const [qty, setQty] = useState(1);
+    const navigate = useNavigate();
 
     const handleQuantityChange = (delta) => {
         setQty(prev => Math.max(1, prev + delta));
@@ -32,6 +33,7 @@ const ProductCard = ({ product }) => {
             cursor: 'pointer',
             position: 'relative'
         }}
+            onClick={() => navigate(`/product/${product._id}`)}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-8px)';
                 e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
@@ -60,9 +62,9 @@ const ProductCard = ({ product }) => {
                         alt={getLocalizedContent('name')}
                         className="product-image"
                         style={{
-                            maxWidth: '90%',
-                            maxHeight: '90%',
-                            objectFit: 'contain',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
                             transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                         }}
                     />

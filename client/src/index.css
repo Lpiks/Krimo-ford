@@ -18,6 +18,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -46,9 +47,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -59,10 +62,85 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
+  }
+}
+
+/* Utility to hide number input spinners */
+.no-spin::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spin {
+  -moz-appearance: textfield;
+}
+
+/* --- PRINT STYLES (Overlay Strategy) --- */
+
+/* Hidden by default on screen */
+.only-print {
+  display: none !important;
+}
+
+@media print {
+
+  /* HIDE EVERYTHING initially */
+  body * {
+    visibility: hidden;
+  }
+
+  /* REVEAL ONLY the printable area and its persistent children */
+  .printable-area,
+  .printable-area * {
+    visibility: visible;
+  }
+
+  /* Position the printable area to cover the entire page, ignoring all parents */
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 2rem;
+    background-color: white;
+    z-index: 9999;
+  }
+
+  /* Double check these are gone */
+  nav,
+  aside,
+  header,
+  footer,
+  .no-print,
+  .btn,
+  button {
+    display: none !important;
+  }
+
+  /* Show the print-only header */
+  .only-print {
+    display: block !important;
+  }
+
+  /* Clean up shadows and borders */
+  div {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Force black text */
+  * {
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

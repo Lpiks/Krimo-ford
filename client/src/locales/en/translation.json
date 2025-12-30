@@ -51,7 +51,9 @@
         "address": "Address",
         "city": "City",
         "postalCode": "Postal Code",
-        "phone": "Phone Number"
+        "phone": "Phone Number",
+        "fullName": "Full Name",
+        "wilaya": "Wilaya"
     },
     "admin": {
         "loginTitle": "Admin Login",

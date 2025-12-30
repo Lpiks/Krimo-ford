@@ -18,9 +18,10 @@ const orderSchema = new mongoose.Schema({
         }
     }],
     shippingAddress: {
+        fullName: { type: String, required: true },
         address: { type: String, required: true },
         city: { type: String, required: true },
-        postalCode: { type: String, required: true },
+        postalCode: { type: String, required: false },
         country: { type: String, required: true },
         phone: { type: String, required: true }
     },
@@ -43,7 +44,7 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Pending', 'Accepted', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Pending'
     },
     isPaid: {

@@ -43,6 +43,11 @@ const productSchema = new mongoose.Schema({
     images: [{
         type: String
     }],
+    fuelType: {
+        type: String,
+        enum: ['Essence', 'Diesel'],
+        default: 'Essence'
+    },
     isFeatured: {
         type: Boolean,
         default: false,

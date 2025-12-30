@@ -46,8 +46,27 @@ const deleteCategory = async (req, res) => {
     }
 };
 
+// @desc    Delete multiple categories
+// @route   POST /api/categories/bulk-delete
+// @access  Private/Admin
+const deleteCategories = async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            res.status(400);
+            throw new Error('No IDs provided');
+        }
+
+        await Category.deleteMany({ _id: { $in: ids } });
+        res.json({ message: 'Categories deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getCategories,
     createCategory,
     deleteCategory,
+    deleteCategories,
 };

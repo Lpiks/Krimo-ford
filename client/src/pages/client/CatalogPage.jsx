@@ -12,6 +12,9 @@ const CatalogPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const categoryParam = searchParams.get('category');
+    const yearParam = searchParams.get('year');
+    const modelParam = searchParams.get('model');
+    const fuelTypeParam = searchParams.get('fuelType');
 
     const categories = ['Brakes', 'Filters', 'Suspension', 'Engine', 'Electrical', 'Body', 'Accessories'];
 
@@ -33,6 +36,9 @@ const CatalogPage = () => {
             if (categoryParam) {
                 query += `&category=${categoryParam}`;
             }
+            if (yearParam) query += `&year=${yearParam}`;
+            if (modelParam) query += `&model=${modelParam}`;
+            if (fuelTypeParam) query += `&fuelType=${fuelTypeParam}`;
 
             const { data } = await axios.get(query);
             setProducts(data.products);
@@ -45,7 +51,7 @@ const CatalogPage = () => {
 
     useEffect(() => {
         fetchProducts(keyword);
-    }, [categoryParam]); // Re-fetch when category changes
+    }, [categoryParam, yearParam, modelParam, fuelTypeParam]); // Re-fetch when params change
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -56,6 +62,8 @@ const CatalogPage = () => {
         <div className="container" style={{ padding: '2rem 1rem' }}>
             <h1 style={{ color: 'var(--ford-blue)', marginBottom: '1.5rem', textAlign: 'center' }}>
                 {categoryParam ? `${t('nav.catalog')} - ${categoryParam}` : t('nav.catalog')}
+                {yearParam && modelParam && ` (${yearParam} ${modelParam})`}
+                {fuelTypeParam && ` - ${fuelTypeParam}`}
             </h1>
 
             {/* Category Filter Buttons */}

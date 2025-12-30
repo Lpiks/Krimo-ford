@@ -19,6 +19,7 @@ const ProductFormPage = () => {
     const [compatibility, setCompatibility] = useState([]);
     const [tempYear, setTempYear] = useState('');
     const [tempModel, setTempModel] = useState('');
+    const [fuelType, setFuelType] = useState('Essence');
     const [isFeatured, setIsFeatured] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -89,6 +90,7 @@ const ProductFormPage = () => {
                     // Ensure images is always an array
                     setImages(data.images && Array.isArray(data.images) ? data.images : []);
                     setCompatibility(data.compatibility || []);
+                    setFuelType(data.fuelType || 'Essence');
                     setIsFeatured(data.isFeatured || false);
                 } catch (error) {
                     console.error(error);
@@ -110,6 +112,7 @@ const ProductFormPage = () => {
             stock,
             images, // Sending the array directly
             compatibility,
+            fuelType,
             isFeatured
         };
 
@@ -149,7 +152,7 @@ const ProductFormPage = () => {
         setUploading(true);
 
         if (!userInfo) {
-            alert('Please login to upload images');
+            toast.error('Please login to upload images');
             setUploading(false);
             return;
         }
@@ -462,6 +465,37 @@ const ProductFormPage = () => {
                             >
                                 {t('common.add', 'Add')}
                             </button>
+                        </div>
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={labelStyle}>Fuel Type</label>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                {['Essence', 'Diesel'].map(type => (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => setFuelType(type)}
+                                        style={{
+                                            padding: '0.5rem 1.5rem',
+                                            borderRadius: '8px',
+                                            border: fuelType === type ? '2px solid var(--ford-blue)' : '1px solid #d1d5db',
+                                            backgroundColor: fuelType === type ? '#eff6ff' : 'white',
+                                            color: fuelType === type ? 'var(--ford-blue)' : '#4b5563',
+                                            fontWeight: '600',
+                                            cursor: 'pointer',
+                                            display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                        }}
+                                    >
+                                        <div style={{
+                                            width: '18px', height: '18px', borderRadius: '50%', border: '2px solid currentColor',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                        }}>
+                                            {fuelType === type && <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'currentColor' }}></div>}
+                                        </div>
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         {compatibility.length > 0 && (

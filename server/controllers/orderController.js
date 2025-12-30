@@ -103,6 +103,23 @@ const updateOrderToDelivered = async (req, res) => {
     }
 };
 
+// @desc    Update order status
+// @route   PUT /api/orders/:id/status
+// @access  Private/Admin
+const updateOrderStatus = async (req, res) => {
+    const { status } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        order.status = status;
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } else {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+};
+
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
 // @access  Private
@@ -124,6 +141,7 @@ module.exports = {
     getOrderById,
     updateOrderToPaid,
     updateOrderToDelivered,
+    updateOrderStatus,
     getMyOrders,
     getOrders,
 };

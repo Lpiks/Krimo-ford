@@ -103,7 +103,7 @@ const AdminLayout = () => {
     }, [userInfo]);
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
+        <div className="admin-layout" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
             {/* Sidebar */}
             <aside style={{
                 width: '260px',
@@ -278,7 +278,7 @@ const AdminLayout = () => {
             </aside>
 
             {/* Main Content */}
-            <main style={{ flex: 1, marginLeft: '260px', padding: '2rem', maxWidth: 'calc(100vw - 260px)' }}>
+            <main className="admin-main" style={{ flex: 1, marginLeft: '260px', padding: '2rem', maxWidth: 'calc(100vw - 260px)' }}>
                 <Outlet />
             </main>
         </div>
