@@ -14,6 +14,7 @@ const ContactPage = lazy(() => import('./pages/client/ContactPage'));
 const CartPage = lazy(() => import('./pages/client/CartPage'));
 const CheckoutPage = lazy(() => import('./pages/client/CheckoutPage'));
 const ProductDetailPage = lazy(() => import('./pages/client/ProductDetailPage'));
+const DiagnosticPage = lazy(() => import('./pages/client/DiagnosticPage'));
 
 const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
@@ -48,6 +49,7 @@ function App() {
           <Route path="/" element={<ClientLayout />}>
             <Route index element={<HomePage />} />
             <Route path="catalog" element={<CatalogPage />} />
+            <Route path="diagnostic" element={<DiagnosticPage />} />
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<CheckoutPage />} />

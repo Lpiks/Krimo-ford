@@ -74,8 +74,7 @@ const ContactPage = () => {
                         fontWeight: '300',
                         opacity: 1,
                         color: 'white',
-                        textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-                        fontWeight: 'bold'
+                        textShadow: '0 1px 2px rgba(0,0,0,0.8)'
                     }}>
                         {t('contact.subtitle', 'We are here to help you find the right parts for your vehicle.')}
                     </p>

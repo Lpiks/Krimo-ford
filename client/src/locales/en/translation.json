@@ -1,6 +1,7 @@
 {
     "nav": {
         "home": "Home",
+        "diagnostic": "Troubleshooter",
         "catalog": "Catalog",
         "cart": "Cart",
         "login": "Login",
@@ -10,6 +11,14 @@
         "inventory": "Inventory",
         "products": "Products",
         "orders": "Orders"
+    },
+    "diagnostic": {
+        "title": "Car Troubleshooter",
+        "subtitle": "Select a system to diagnose the issue",
+        "symptomTitle": "What seems to be the problem?",
+        "resultTitle": "Recommended Solution",
+        "findParts": "Find Parts",
+        "restart": "Start Over"
     },
     "home": {
         "title": "Welcome to Krimoford",

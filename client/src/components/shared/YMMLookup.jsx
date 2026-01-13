@@ -91,14 +91,6 @@ const YMMLookup = () => {
                             fontSize: '1rem',
                             outline: 'none',
                             backdropFilter: 'blur(10px)',
-                            borderRadius: '12px',
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            flex: 1,
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                            color: 'white',
-                            fontSize: '1rem',
-                            outline: 'none',
-                            backdropFilter: 'blur(10px)',
                             transition: 'all 0.2s'
                         }}
                         onFocus={(e) => {
@@ -186,9 +178,6 @@ const YMMLookup = () => {
                         backgroundColor: 'white',
                         color: 'var(--ford-blue)',
                         padding: '1rem',
-                        borderRadius: '12px',
-                        fontSize: '1rem',
-                        fontWeight: 'bold',
                         borderRadius: '12px',
                         fontSize: '1rem',
                         fontWeight: 'bold',

@@ -89,6 +89,26 @@ const Header = () => {
                         </li>
                         <li>
                             <Link
+                                to="/diagnostic"
+                                style={linkStyle('/diagnostic')}
+                                onMouseEnter={(e) => {
+                                    if (!isActive('/diagnostic')) {
+                                        e.currentTarget.style.backgroundColor = '#f3f4f6';
+                                        e.currentTarget.style.color = '#1f2937';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isActive('/diagnostic')) {
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                        e.currentTarget.style.color = '#4b5563';
+                                    }
+                                }}
+                            >
+                                {t('nav.diagnostic', 'Troubleshooter')}
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
                                 to="/contact"
                                 style={linkStyle('/contact')}
                                 onMouseEnter={(e) => {
