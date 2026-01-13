@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from '../../components/shared/ProductCard';
 
 const CatalogPage = () => {
@@ -58,16 +59,48 @@ const CatalogPage = () => {
         fetchProducts(keyword);
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: 'spring',
+                stiffness: 100
+            }
+        }
+    };
+
     return (
         <div className="container" style={{ padding: '2rem 1rem' }}>
-            <h1 style={{ color: 'var(--ford-blue)', marginBottom: '1.5rem', textAlign: 'center' }}>
+            <motion.h1
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                style={{ color: 'var(--ford-blue)', marginBottom: '1.5rem', textAlign: 'center' }}
+            >
                 {categoryParam ? `${t('nav.catalog')} - ${categoryParam}` : t('nav.catalog')}
                 {yearParam && modelParam && ` (${yearParam} ${modelParam})`}
                 {fuelTypeParam && ` - ${fuelTypeParam}`}
-            </h1>
+            </motion.h1>
 
             {/* Category Filter Buttons */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}
+            >
                 <button
                     onClick={() => handleCategoryClick(null)}
                     style={{
@@ -105,9 +138,14 @@ const CatalogPage = () => {
                         {cat}
                     </button>
                 ))}
-            </div>
+            </motion.div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}
+            >
                 <form onSubmit={submitHandler} className="search-container" style={{ width: '100%', maxWidth: '500px' }}>
                     <input
                         type="text"
@@ -123,26 +161,47 @@ const CatalogPage = () => {
                         </svg>
                     </button>
                 </form>
-            </div>
+            </motion.div>
 
             {loading ? (
                 <p>{t('common.loading')}</p>
             ) : error ? (
                 <p style={{ color: 'red' }}>{t('common.error')}: {error}</p>
             ) : (
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                    gap: '2rem'
-                }}>
-                    {products.map((product) => (
-                        <ProductCard key={product._id} product={product} />
-                    ))}
-                </div>
+                <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    layout
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                        gap: '2rem'
+                    }}
+                >
+                    <AnimatePresence>
+                        {products.map((product) => (
+                            <motion.div
+                                key={product._id}
+                                variants={itemVariants}
+                                layout
+                                initial="hidden"
+                                animate="visible"
+                                exit="hidden"
+                            >
+                                <ProductCard product={product} />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </motion.div>
             )}
 
             {products.length === 0 && !loading && !error && (
-                <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    style={{ textAlign: 'center', marginTop: '3rem' }}
+                >
                     <p>{t('catalog.noProducts')}</p>
                     {keyword && (
                         <button
@@ -153,7 +212,7 @@ const CatalogPage = () => {
                             {t('common.clearSearch', 'Clear Search')}
                         </button>
                     )}
-                </div>
+                </motion.div>
             )}
         </div>
     );
