@@ -165,6 +165,17 @@ const AdminLayout = () => {
                         </svg>
                         {t('admin.dashboard', 'Dashboard')}
                     </Link>
+                    <Link to="/admin/analytics" style={linkStyle('/admin/analytics')}
+                        onMouseEnter={e => { if (!isActive('/admin/analytics')) e.currentTarget.style.color = 'white' }}
+                        onMouseLeave={e => { if (!isActive('/admin/analytics')) e.currentTarget.style.color = '#9ca3af' }}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.75rem' }}>
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        {t('admin.analytics', 'Analytics')}
+                    </Link>
                     <Link to="/admin/products" style={linkStyle('/admin/products')}
                         onMouseEnter={e => { if (!isActive('/admin/products')) e.currentTarget.style.color = 'white' }}
                         onMouseLeave={e => { if (!isActive('/admin/products')) e.currentTarget.style.color = '#9ca3af' }}

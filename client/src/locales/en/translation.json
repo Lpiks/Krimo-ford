@@ -79,7 +79,14 @@
         "delivered": "Delivered",
         "processing": "Processing",
         "cancelled": "Cancelled",
-        "guest": "Guest"
+        "guest": "Guest",
+        "analytics": "Analytics",
+        "revenue": "Revenue",
+        "totalRevenue": "Total Revenue",
+        "monthlyGrowth": "Monthly Growth",
+        "topProducts": "Top Products",
+        "sales": "Sales",
+        "revenueChart": "Revenue Overview"
     },
     "productForm": {
         "titleNew": "Add New Product",

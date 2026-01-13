@@ -25,6 +25,7 @@ const AdminOrderDetailsPage = lazy(() => import('./pages/admin/AdminOrderDetails
 const AdminInboxPage = lazy(() => import('./pages/admin/AdminInboxPage'));
 const CategoryManager = lazy(() => import('./pages/admin/CategoryManager'));
 const CarModelManager = lazy(() => import('./pages/admin/CarModelManager'));
+const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'));
 
 // Loading Component
 const LoadingFallback = () => (
@@ -68,6 +69,7 @@ function App() {
             <Route path="inbox" element={<AdminInboxPage />} />
             <Route path="categories" element={<CategoryManager />} />
             <Route path="carmodels" element={<CarModelManager />} />
+            <Route path="analytics" element={<AdminAnalyticsPage />} />
           </Route>
         </Routes>
       </Suspense>
