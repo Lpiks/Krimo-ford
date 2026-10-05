@@ -207,7 +207,7 @@ const ProductFormPage = () => {
                     {/* Basic Info */}
                     <div style={sectionStyle}>
                         <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--ford-blue)', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Basic Information</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                        <div className="admin-form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                             <div>
                                 <label style={labelStyle}>{t('productForm.oem')}</label>
                                 <input
@@ -252,7 +252,7 @@ const ProductFormPage = () => {
                             />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                        <div className="admin-form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
                             <div>
                                 <label style={labelStyle}>{t('productForm.nameFr')}</label>
                                 <input
@@ -290,7 +290,7 @@ const ProductFormPage = () => {
                             />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                        <div className="admin-form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                             <div>
                                 <label style={labelStyle}>{t('productForm.descriptionFr')}</label>
                                 <textarea
@@ -318,7 +318,7 @@ const ProductFormPage = () => {
                     <div style={sectionStyle}>
                         <h2 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--ford-blue)', borderBottom: '1px solid #f3f4f6', paddingBottom: '0.75rem' }}>Inventory & Categorization</h2>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                        <div className="admin-form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
                             <div>
                                 <label style={labelStyle}>{t('productForm.price')}</label>
                                 <input
@@ -422,8 +422,8 @@ const ProductFormPage = () => {
                             ))}
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'flex-start' }}>
-                            <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <div style={{ flex: '1 1 110px', minWidth: '110px' }}>
                                 <input
                                     type="number"
                                     placeholder={t('productForm.year', 'Year')}
@@ -434,7 +434,7 @@ const ProductFormPage = () => {
                                     onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                                 />
                             </div>
-                            <div style={{ flex: 1 }}>
+                            <div style={{ flex: '2 1 180px', minWidth: '180px' }}>
                                 <ModernSelect
                                     options={availableCarModels.map(m => ({ value: m.name, label: m.name }))}
                                     value={tempModel}
@@ -459,8 +459,11 @@ const ProductFormPage = () => {
                                     border: 'none',
                                     fontWeight: '600',
                                     cursor: 'pointer',
-                                    height: '42px', // Match input height approx
-                                    display: 'flex', alignItems: 'center'
+                                    height: '42px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    minWidth: '90px'
                                 }}
                             >
                                 {t('common.add', 'Add')}

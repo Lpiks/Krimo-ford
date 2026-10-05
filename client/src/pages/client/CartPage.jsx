@@ -72,13 +72,13 @@ const CartPage = () => {
                     </span>
                 </h1>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem', alignItems: 'start' }}>
+                <div className="cart-main-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '2rem', alignItems: 'start' }}>
 
                     {/* Left Column: Cart Items List */}
                     <div style={{ flex: '1', minWidth: '0' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                             {cartItems.map((item, index) => (
-                                <div key={item._id} className={`animate-on-scroll delay-${(index % 5) * 100}`} style={{
+                                <div key={item._id} className={`cart-item-card animate-on-scroll delay-${(index % 5) * 100}`} style={{
                                     display: 'grid',
                                     gridTemplateColumns: '120px 1fr auto',
                                     gap: '1.5rem',
@@ -90,13 +90,14 @@ const CartPage = () => {
                                     alignItems: 'center'
                                 }}>
                                     {/* Product Image */}
-                                    <div style={{
+                                    <div className="cart-item-image" style={{
                                         width: '120px',
                                         height: '120px',
                                         borderRadius: '12px',
                                         overflow: 'hidden',
                                         backgroundColor: '#f1f5f9',
-                                        border: '1px solid #e2e8f0'
+                                        border: '1px solid #e2e8f0',
+                                        flexShrink: 0
                                     }}>
                                         <img
                                             src={item.images[0]}
@@ -106,19 +107,19 @@ const CartPage = () => {
                                     </div>
 
                                     {/* Product Info & Controls */}
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', minWidth: 0 }}>
                                         <div>
-                                            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#0f172a' }}>
+                                            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#0f172a' }}>
                                                 <Link to={`/product/${item._id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                                                     {getLocalizedContent(item, 'name')}
                                                 </Link>
                                             </h3>
-                                            <div style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0.25rem' }}>
+                                            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
                                                 Ref: {item.oemNumber}
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                                             <div style={{ display: 'inline-flex', alignItems: 'center', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                                                 <button
                                                     onClick={() => handleQuantityChange(item, item.qty - 1)}
@@ -161,7 +162,7 @@ const CartPage = () => {
                                     </div>
 
                                     {/* Price */}
-                                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                    <div className="cart-item-price-col" style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                                         <div style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--ford-blue)' }}>
                                             {(item.qty * item.price).toLocaleString()} DA
                                         </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const LanguageSwitcher = ({ direction = 'down', variant = 'light' }) => {
+const LanguageSwitcher = ({ direction = 'down', variant = 'light', style = {} }) => {
     const { i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -41,24 +41,25 @@ const LanguageSwitcher = ({ direction = 'down', variant = 'light' }) => {
     const isDark = variant === 'dark';
 
     return (
-        <div className="language-switcher" ref={dropdownRef} style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+        <div className="language-switcher" ref={dropdownRef} style={{ position: 'relative', display: 'inline-block', ...style }}>
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: '0.5rem',
-                    padding: '0.5rem 0.8rem',
+                    gap: '0.45rem',
+                    padding: '0.4rem 0.65rem',
                     borderRadius: '8px',
                     border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e5e7eb',
                     backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'white',
                     color: isDark ? 'white' : '#374151',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
-                    fontSize: '0.9rem',
+                    fontSize: '0.85rem',
                     transition: 'all 0.2s',
-                    width: '100%'
+                    whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={e => {
                     if (isDark) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';

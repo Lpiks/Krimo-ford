@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/shared/LanguageSwitcher';
@@ -10,6 +10,14 @@ const AdminLayout = () => {
     const { userInfo, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Mobile sidebar toggle
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Auto-close sidebar on route change
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [location.pathname]);
 
     useEffect(() => {
         if (!userInfo || userInfo.role !== 'admin') {
@@ -30,49 +38,52 @@ const AdminLayout = () => {
     const linkStyle = (path) => ({
         display: 'flex',
         alignItems: 'center',
-        padding: '0.75rem 1rem',
+        justifyContent: 'space-between',
+        padding: '0.65rem 0.85rem',
         borderRadius: '8px',
-        color: isActive(path) ? 'white' : '#9ca3af',
+        color: isActive(path) ? '#ffffff' : '#94a3b8',
         backgroundColor: isActive(path) ? 'var(--ford-blue)' : 'transparent',
         textDecoration: 'none',
-        fontWeight: isActive(path) ? '600' : '500',
-        marginBottom: '0.5rem',
-        transition: 'all 0.2s',
-        border: isActive(path) ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent'
+        fontWeight: isActive(path) ? '700' : '500',
+        fontSize: '0.88rem',
+        marginBottom: '0.25rem',
+        transition: 'all 0.15s ease',
+        border: isActive(path) ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent'
     });
 
     const handleLogout = () => {
-        toast((t) => (
+        toast((toastObj) => (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span>Log out?</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>Déconnexion Admin ?</span>
                 <button
                     onClick={() => {
                         logout();
                         navigate('/admin/login');
-                        toast.dismiss(t.id);
+                        toast.dismiss(toastObj.id);
                     }}
                     style={{
-                        padding: '4px 8px',
+                        padding: '4px 10px',
                         backgroundColor: '#dc3545',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        fontWeight: '700'
                     }}
                 >
-                    Yes
+                    Oui
                 </button>
                 <button
-                    onClick={() => toast.dismiss(t.id)}
+                    onClick={() => toast.dismiss(toastObj.id)}
                     style={{
-                        padding: '4px 8px',
+                        padding: '4px 10px',
                         backgroundColor: '#eee',
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer'
                     }}
                 >
-                    No
+                    Non
                 </button>
             </div>
         ), {
@@ -81,217 +92,394 @@ const AdminLayout = () => {
         });
     };
 
-    const [unreadCount, setUnreadCount] = React.useState(0);
+    // Calculate unread indicators
+    const [unreadMessages, setUnreadMessages] = useState(2);
+    const [pendingVinCount, setPendingVinCount] = useState(2);
 
     useEffect(() => {
-        const fetchUnreadCount = async () => {
-            if (!userInfo) return;
-            try {
-                const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                // Fetch all messages to count unread - in production, create a dedicated count endpoint
-                const { data } = await import('axios').then(m => m.default.get('/api/messages', config));
-                const count = data.filter(m => !m.read).length;
-                setUnreadCount(count);
-            } catch (error) {
-                console.error("Failed to fetch unread count", error);
+        try {
+            const vinStored = localStorage.getItem('krimo_vin_requests');
+            if (vinStored) {
+                const arr = JSON.parse(vinStored);
+                setPendingVinCount(arr.filter(r => r.status === 'En attente').length);
             }
-        };
-
-        fetchUnreadCount();
-        const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
-        return () => clearInterval(interval);
-    }, [userInfo]);
+        } catch (e) {
+            console.error(e);
+        }
+    }, [location.pathname]);
 
     return (
-        <div className="admin-layout" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
-            {/* Sidebar */}
-            <aside style={{
-                width: '260px',
-                backgroundColor: '#111827',
-                color: 'white',
-                display: 'flex',
-                flexDirection: 'column',
+        <div className="admin-layout-wrapper" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f1f5f9' }}>
+            {/* Mobile Top Navbar (Visible only on mobile/tablet) */}
+            <div className="admin-mobile-top-bar" style={{
                 position: 'fixed',
-                height: '100vh',
-                left: 0,
                 top: 0,
-                overflowY: 'auto',
-                boxShadow: '4px 0 10px rgba(0,0,0,0.1)',
-                zIndex: 50
+                left: 0,
+                right: 0,
+                height: '60px',
+                backgroundColor: '#071d49',
+                color: 'white',
+                zIndex: 900,
+                display: 'none', // Handled via CSS media query below
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 1rem',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
             }}>
-                <div style={{ padding: '2rem 1.5rem', borderBottom: '1px solid #1f2937' }}>
-                    <h2 className="logo-text" style={{
+                <button
+                    type="button"
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    style={{
+                        background: 'none',
+                        border: 'none',
                         color: 'white',
                         fontSize: '1.5rem',
-                        margin: 0,
+                        cursor: 'pointer',
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem'
-                    }}>
-                        Krimoford
-                        <span style={{
-                            backgroundColor: 'rgba(255,255,255,0.1)',
-                            color: '#9ca3af',
-                            fontSize: '0.7rem',
-                            padding: '0.1rem 0.4rem',
-                            borderRadius: '4px',
-                            fontFamily: 'sans-serif',
-                            letterSpacing: '0.5px'
-                        }}>ADMIN</span>
-                    </h2>
+                        alignItems: 'center'
+                    }}
+                    aria-label="Toggle admin menu"
+                >
+                    ☰
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                    <span className="logo-text" style={{ fontSize: '1.6rem', color: '#60a5fa' }}>Krimoford</span>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '800', color: '#93c5fd', textTransform: 'uppercase' }}>ADMIN</span>
                 </div>
 
-                <nav style={{ padding: '1.5rem 1rem', flex: 1 }}>
-                    <p style={{
-                        color: '#6b7280',
+                <Link
+                    to="/"
+                    style={{
+                        padding: '0.35rem 0.65rem',
+                        borderRadius: '6px',
+                        backgroundColor: 'rgba(255,255,255,0.15)',
+                        color: 'white',
                         fontSize: '0.75rem',
                         fontWeight: '700',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
-                        marginBottom: '1rem',
-                        paddingLeft: '0.5rem'
-                    }}>
-                        Menu
-                    </p>
-                    <Link to="/admin" style={linkStyle('/admin')}
-                        onMouseEnter={e => { if (!isActive('/admin')) e.currentTarget.style.color = 'white' }}
-                        onMouseLeave={e => { if (!isActive('/admin')) e.currentTarget.style.color = '#9ca3af' }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.75rem' }}>
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg>
-                        {t('admin.dashboard', 'Dashboard')}
-                    </Link>
-                    <Link to="/admin/analytics" style={linkStyle('/admin/analytics')}
-                        onMouseEnter={e => { if (!isActive('/admin/analytics')) e.currentTarget.style.color = 'white' }}
-                        onMouseLeave={e => { if (!isActive('/admin/analytics')) e.currentTarget.style.color = '#9ca3af' }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.75rem' }}>
-                            <line x1="18" y1="20" x2="18" y2="10"></line>
-                            <line x1="12" y1="20" x2="12" y2="4"></line>
-                            <line x1="6" y1="20" x2="6" y2="14"></line>
-                        </svg>
-                        {t('admin.analytics', 'Analytics')}
-                    </Link>
-                    <Link to="/admin/products" style={linkStyle('/admin/products')}
-                        onMouseEnter={e => { if (!isActive('/admin/products')) e.currentTarget.style.color = 'white' }}
-                        onMouseLeave={e => { if (!isActive('/admin/products')) e.currentTarget.style.color = '#9ca3af' }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.75rem' }}>
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
-                        {t('admin.products', 'Products')}
-                    </Link>
-                    <Link to="/admin/orders" style={linkStyle('/admin/orders')}
-                        onMouseEnter={e => { if (!isActive('/admin/orders')) e.currentTarget.style.color = 'white' }}
-                        onMouseLeave={e => { if (!isActive('/admin/orders')) e.currentTarget.style.color = '#9ca3af' }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.75rem' }}>
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                        {t('admin.orders', 'Orders')}
-                    </Link>
-                    <Link to="/admin/inbox" style={{ ...linkStyle('/admin/inbox'), justifyContent: 'space-between' }}
-                        onMouseEnter={e => { if (!isActive('/admin/inbox')) e.currentTarget.style.color = 'white' }}
-                        onMouseLeave={e => { if (!isActive('/admin/inbox')) e.currentTarget.style.color = '#9ca3af' }}
-                    >
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.75rem' }}>
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                            {t('admin.inbox', 'Inbox')}
-                        </div>
-                        {unreadCount > 0 && (
-                            <span style={{
-                                backgroundColor: '#ef4444',
-                                color: 'white',
-                                fontSize: '0.75rem',
-                                fontWeight: 'bold',
-                                padding: '0.1rem 0.5rem',
-                                borderRadius: '999px',
-                                minWidth: '20px',
-                                textAlign: 'center'
-                            }}>
-                                {unreadCount}
-                            </span>
-                        )}
-                    </Link>
-                </nav>
+                        textDecoration: 'none'
+                    }}
+                >
+                    Boutique ↗
+                </Link>
+            </div>
 
-                <div style={{ padding: '1.5rem', borderTop: '1px solid #1f2937', backgroundColor: '#0f1420' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <div style={{
-                            width: '36px',
-                            height: '36px',
-                            borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
-                            color: 'white',
+            {/* Mobile Sidebar Backdrop Overlay */}
+            {sidebarOpen && (
+                <div
+                    onClick={() => setSidebarOpen(false)}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        backdropFilter: 'blur(3px)',
+                        zIndex: 950
+                    }}
+                />
+            )}
+
+            {/* Sidebar */}
+            <aside
+                className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
+                style={{
+                    width: '270px',
+                    backgroundColor: '#0b1329',
+                    color: '#f8fafc',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'fixed',
+                    height: '100vh',
+                    left: 0,
+                    top: 0,
+                    overflowY: 'auto',
+                    boxShadow: '4px 0 15px rgba(0,0,0,0.15)',
+                    zIndex: 999,
+                    transition: 'transform 0.3s ease'
+                }}
+            >
+                {/* Brand Logo & Store Link */}
+                <div style={{ padding: '1.5rem 1.25rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2 className="logo-text" style={{ color: 'white', fontSize: '1.75rem', margin: 0, lineHeight: 1 }}>
+                                Krimoford
+                            </h2>
+                            <span style={{
+                                backgroundColor: 'rgba(0, 52, 120, 0.4)',
+                                color: '#93c5fd',
+                                fontSize: '0.65rem',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                textTransform: 'uppercase',
+                                fontWeight: '800',
+                                letterSpacing: '0.08em',
+                                display: 'inline-block',
+                                marginTop: '4px'
+                            }}>
+                                Comptoir Soummam • Admin
+                            </span>
+                        </div>
+
+                        {sidebarOpen && (
+                            <button
+                                type="button"
+                                onClick={() => setSidebarOpen(false)}
+                                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.25rem', cursor: 'pointer' }}
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
+
+                    <a
+                        href="/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            marginTop: '1rem',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginRight: '0.75rem',
-                            fontWeight: 'bold',
-                            border: '1px solid #374151'
-                        }}>
-                            A
-                        </div>
-                        <div style={{ overflow: 'hidden' }}>
-                            <p style={{ fontSize: '0.9rem', fontWeight: '600', margin: 0, color: '#e5e7eb' }}>Admin User</p>
-                            <p style={{ fontSize: '0.75rem', color: '#9ca3af', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userInfo?.email}</p>
-                        </div>
-                    </div>
+                            gap: '6px',
+                            padding: '0.45rem',
+                            backgroundColor: 'rgba(255,255,255,0.06)',
+                            color: '#cbd5e1',
+                            borderRadius: '6px',
+                            textDecoration: 'none',
+                            fontSize: '0.8rem',
+                            fontWeight: '600',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'}
+                    >
+                        <span>🌐</span>
+                        <span>Voir la Boutique en direct ↗</span>
+                    </a>
+                </div>
 
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
-                        <div style={{ flex: 1 }}>
-                            <LanguageSwitcher direction="up" variant="dark" />
+                {/* Navigation Links Grouped */}
+                <nav style={{ padding: '1rem 0.85rem', flex: 1 }}>
+                    {/* Section 1: Pilotage */}
+                    <p style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0.5rem 0 0.5rem 0.5rem' }}>
+                        Tableau de Bord
+                    </p>
+                    <Link to="/admin" style={linkStyle('/admin')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📊</span>
+                            <span>Vue d'ensemble</span>
+                        </span>
+                    </Link>
+                    <Link to="/admin/analytics" style={linkStyle('/admin/analytics')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📈</span>
+                            <span>Chiffre d'Affaires & Ventes</span>
+                        </span>
+                    </Link>
+
+                    {/* Section 2: Ventes & Demandes Clients */}
+                    <p style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '1.25rem 0 0.5rem 0.5rem' }}>
+                        Demandes Clients & Ventes
+                    </p>
+                    <Link to="/admin/vin-requests" style={linkStyle('/admin/vin-requests')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📸</span>
+                            <span>Devis Carte Grise & VIN</span>
+                        </span>
+                        {pendingVinCount > 0 && (
+                            <span style={{ backgroundColor: '#ea580c', color: 'white', fontSize: '0.7rem', fontWeight: '800', padding: '1px 6px', borderRadius: '999px' }}>
+                                {pendingVinCount}
+                            </span>
+                        )}
+                    </Link>
+                    <Link to="/admin/orders" style={linkStyle('/admin/orders')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📦</span>
+                            <span>Commandes (58 Wilayas)</span>
+                        </span>
+                    </Link>
+                    <Link to="/admin/diagnostics" style={linkStyle('/admin/diagnostics')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>⚡</span>
+                            <span>Diagnostics & Pannes</span>
+                        </span>
+                    </Link>
+                    <Link to="/admin/inbox" style={linkStyle('/admin/inbox')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📬</span>
+                            <span>Messages & Demandes</span>
+                        </span>
+                        {unreadMessages > 0 && (
+                            <span style={{ backgroundColor: '#dc2626', color: 'white', fontSize: '0.7rem', fontWeight: '800', padding: '1px 6px', borderRadius: '999px' }}>
+                                {unreadMessages}
+                            </span>
+                        )}
+                    </Link>
+
+                    {/* Section 3: Catalogue & Véhicules */}
+                    <p style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '1.25rem 0 0.5rem 0.5rem' }}>
+                        Catalogue & Véhicules Ford
+                    </p>
+                    <Link to="/admin/kits" style={linkStyle('/admin/kits')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🛠️</span>
+                            <span>Packs Entretien & Vidange</span>
+                        </span>
+                        <span style={{ backgroundColor: '#16a34a', color: 'white', fontSize: '0.65rem', fontWeight: '800', padding: '1px 5px', borderRadius: '4px' }}>
+                            -15%
+                        </span>
+                    </Link>
+                    <Link to="/admin/products" style={linkStyle('/admin/products')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🏷️</span>
+                            <span>Stock Pièces Détachées</span>
+                        </span>
+                    </Link>
+                    <Link to="/admin/categories" style={linkStyle('/admin/categories')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📂</span>
+                            <span>Catégories Pièces</span>
+                        </span>
+                    </Link>
+                    <Link to="/admin/carmodels" style={linkStyle('/admin/carmodels')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🚗</span>
+                            <span>Modèles Ford Supportés</span>
+                        </span>
+                    </Link>
+
+                    {/* Section 4: Configuration & Expédition */}
+                    <p style={{ color: '#64748b', fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '1.25rem 0 0.5rem 0.5rem' }}>
+                        Livraison & Configuration
+                    </p>
+                    <Link to="/admin/shipping" style={linkStyle('/admin/shipping')}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>🚚</span>
+                            <span>Tarifs 58 Wilayas (Yalidine)</span>
+                        </span>
+                    </Link>
+                </nav>
+
+                {/* Footer Admin User & Logout */}
+                <div style={{ padding: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)', backgroundColor: '#070d1e' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '50%',
+                                backgroundColor: 'var(--ford-blue)',
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontWeight: '800',
+                                fontSize: '0.9rem'
+                            }}>
+                                K
+                            </div>
+                            <div style={{ overflow: 'hidden' }}>
+                                <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {userInfo?.name || 'Krimo (Admin)'}
+                                </div>
+                                <div style={{ fontSize: '0.72rem', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {userInfo?.email || 'admin@krimoford.dz'}
+                                </div>
+                            </div>
                         </div>
+
                         <button
+                            type="button"
                             onClick={handleLogout}
-                            title="Log Out"
+                            title="Se déconnecter"
                             style={{
-                                background: 'rgba(239, 68, 68, 0.1)',
-                                border: '1px solid rgba(239, 68, 68, 0.2)',
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
                                 color: '#ef4444',
-                                padding: '0.5rem',
+                                padding: '0.45rem',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s',
-                                width: '40px'
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.background = '#ef4444';
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
-                                e.currentTarget.style.color = '#ef4444';
+                                justifyContent: 'center'
                             }}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                <polyline points="16 17 21 12 16 7"></polyline>
-                                <line x1="21" y1="12" x2="9" y2="12"></line>
-                            </svg>
+                            🚪
                         </button>
                     </div>
+
+                    <LanguageSwitcher direction="up" variant="dark" />
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="admin-main" style={{ flex: 1, marginLeft: '260px', padding: '2rem', maxWidth: 'calc(100vw - 260px)' }}>
+            {/* Main Content Viewport */}
+            <main
+                className="admin-main-content"
+                style={{
+                    flex: 1,
+                    marginLeft: '270px',
+                    padding: '2rem',
+                    maxWidth: 'calc(100vw - 270px)',
+                    minHeight: '100vh',
+                    overflowX: 'hidden'
+                }}
+            >
                 <Outlet />
             </main>
+
+            {/* Injected Admin Media Query Styles */}
+            <style>{`
+                @media (max-width: 900px) {
+                    .admin-mobile-top-bar {
+                        display: flex !important;
+                    }
+                    .admin-sidebar {
+                        transform: translateX(-100%);
+                    }
+                    .admin-sidebar.open {
+                        transform: translateX(0);
+                    }
+                    .admin-main-content {
+                        margin-left: 0 !important;
+                        max-width: 100vw !important;
+                        padding: 4.75rem 0.85rem 2rem 0.85rem !important;
+                        overflow-x: hidden !important;
+                    }
+                }
+
+                /* Mobile Card & Grid Adaptations for Admin */
+                @media (max-width: 768px) {
+                    .admin-responsive-grid-2 {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .admin-vin-card {
+                        grid-template-columns: 1fr !important;
+                        gap: 1rem !important;
+                    }
+                    .admin-vin-card .admin-card-actions {
+                        width: 100% !important;
+                        min-width: 100% !important;
+                    }
+                    .admin-diag-card {
+                        grid-template-columns: 1fr !important;
+                        gap: 1rem !important;
+                    }
+                    .admin-diag-card .admin-card-actions {
+                        width: 100% !important;
+                        min-width: 100% !important;
+                    }
+                    .admin-form-row-2 {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .admin-header-title {
+                        font-size: 1.75rem !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

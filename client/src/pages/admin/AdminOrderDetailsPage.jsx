@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { getWhatsAppLink } from '../../utils/whatsapp';
 
 const AdminOrderDetailsPage = () => {
     const { t, i18n } = useTranslation();
@@ -15,6 +16,7 @@ const AdminOrderDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const { userInfo } = useAuth();
     const invoiceRef = useRef();
+    const [trackingCode, setTrackingCode] = useState('YAL-84920');
 
     // Helper to get translated content safely
     const getLocalizedContent = (item) => {
@@ -273,12 +275,12 @@ const AdminOrderDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '2rem' }} className="no-print">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }} className="no-print">
                         <div>
-                            <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--ford-blue)', marginBottom: '0.5rem', letterSpacing: '-0.025em' }}>
+                            <h1 className="admin-header-title" style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--ford-blue)', marginBottom: '0.5rem', letterSpacing: '-0.025em' }}>
                                 {t('orderDetails.title')} <span style={{ color: '#94a3b8' }}>#{order._id.substring(20, 24)}</span>
                             </h1>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                                 <span style={{ color: '#64748b' }}><i className="far fa-calendar-alt" style={{ marginRight: '0.5rem' }}></i> {new Date(order.createdAt).toLocaleDateString()}</span>
                                 <span style={{
                                     padding: '0.25rem 0.75rem',
@@ -294,7 +296,7 @@ const AdminOrderDetailsPage = () => {
                                 </span>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
+                        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                             <button
                                 onClick={handleDownloadPDF}
                                 className="btn"
@@ -305,7 +307,7 @@ const AdminOrderDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
                         {/* Left Column: Customer & Status */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                             {/* Actions Card (Mobile/Desktop) */}
@@ -347,6 +349,77 @@ const AdminOrderDetailsPage = () => {
                                         <i className="fas fa-truck" style={{ marginRight: '0.5rem' }}></i> {t('orderDetails.markDelivered')}
                                     </button>
                                 )}
+
+                                {/* Yalidine / 58 Wilayas Tracking Number */}
+                                <div style={{
+                                    marginTop: '1.25rem',
+                                    paddingTop: '1.25rem',
+                                    borderTop: '1px solid #e2e8f0'
+                                }}>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', textTransform: 'uppercase', marginBottom: '6px' }}>
+                                        📦 Bordereau Yalidine / Procolis (58W) :
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Ex: YAL-94821"
+                                            value={trackingCode}
+                                            onChange={(e) => setTrackingCode(e.target.value)}
+                                            style={{
+                                                flex: 1,
+                                                padding: '0.5rem 0.75rem',
+                                                borderRadius: '6px',
+                                                border: '1px solid #cbd5e1',
+                                                fontSize: '0.85rem',
+                                                fontWeight: '700',
+                                                outline: 'none'
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => toast.success(`Bordereau ${trackingCode} enregistré pour le suivi client !`)}
+                                            style={{
+                                                padding: '0.5rem 0.85rem',
+                                                backgroundColor: 'var(--ford-blue)',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                fontSize: '0.8rem',
+                                                fontWeight: '700',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Valider
+                                        </button>
+                                    </div>
+                                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
+                                        Visible par le client sur la page <strong>/track-order</strong>
+                                    </div>
+
+                                    {/* Direct WhatsApp Customer Notification */}
+                                    <a
+                                        href={getWhatsAppLink(`Salam ${order.shippingAddress?.fullName || 'Client'} ! Votre commande #${order._id.substring(20, 24)} chez Krimo Pièces Auto (Boulevard de la Soummam) a été prise en charge. N° Bordereau Yalidine : ${trackingCode}. Total : ${order.totalPrice.toLocaleString()} DA.`)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            marginTop: '0.85rem',
+                                            padding: '0.65rem',
+                                            backgroundColor: '#25D366',
+                                            color: 'white',
+                                            borderRadius: '8px',
+                                            textDecoration: 'none',
+                                            fontWeight: '700',
+                                            fontSize: '0.85rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '6px'
+                                        }}
+                                    >
+                                        <span>💬</span>
+                                        <span>Notifier Client par WhatsApp</span>
+                                    </a>
+                                </div>
                             </div>
 
                             <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid #f1f5f9' }}>

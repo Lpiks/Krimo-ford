@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import ClientLayout from './pages/ClientLayout';
 import AdminLayout from './pages/AdminLayout';
 
-// Lazy Load Pages
+// Lazy Load Existing Client Pages
 const HomePage = lazy(() => import('./pages/client/HomePage'));
 const CatalogPage = lazy(() => import('./pages/client/CatalogPage'));
 const ContactPage = lazy(() => import('./pages/client/ContactPage'));
@@ -16,6 +16,14 @@ const CheckoutPage = lazy(() => import('./pages/client/CheckoutPage'));
 const ProductDetailPage = lazy(() => import('./pages/client/ProductDetailPage'));
 const DiagnosticPage = lazy(() => import('./pages/client/DiagnosticPage'));
 
+// Lazy Load New High-Conversion Client Pages
+const TrackOrderPage = lazy(() => import('./pages/client/TrackOrderPage'));
+const VinRequestPage = lazy(() => import('./pages/client/VinRequestPage'));
+const KitsPage = lazy(() => import('./pages/client/KitsPage'));
+const ModelHubPage = lazy(() => import('./pages/client/ModelHubPage'));
+const ShippingGuidePage = lazy(() => import('./pages/client/ShippingGuidePage'));
+
+// Lazy Load Admin Pages
 const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const InventoryManager = lazy(() => import('./pages/admin/InventoryManager'));
@@ -26,11 +34,15 @@ const AdminInboxPage = lazy(() => import('./pages/admin/AdminInboxPage'));
 const CategoryManager = lazy(() => import('./pages/admin/CategoryManager'));
 const CarModelManager = lazy(() => import('./pages/admin/CarModelManager'));
 const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'));
+const AdminVinRequestsPage = lazy(() => import('./pages/admin/AdminVinRequestsPage'));
+const AdminKitsManager = lazy(() => import('./pages/admin/AdminKitsManager'));
+const AdminDiagnosticsPage = lazy(() => import('./pages/admin/AdminDiagnosticsPage'));
+const AdminShippingManager = lazy(() => import('./pages/admin/AdminShippingManager'));
 
 // Loading Component
 const LoadingFallback = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--ford-blue)' }}>
-    Loading...
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--ford-blue)', fontWeight: 'bold' }}>
+    Chargement Krimoford...
   </div>
 );
 
@@ -50,7 +62,12 @@ function App() {
           <Route path="/" element={<ClientLayout />}>
             <Route index element={<HomePage />} />
             <Route path="catalog" element={<CatalogPage />} />
+            <Route path="kits" element={<KitsPage />} />
+            <Route path="vin-request" element={<VinRequestPage />} />
             <Route path="diagnostic" element={<DiagnosticPage />} />
+            <Route path="track-order" element={<TrackOrderPage />} />
+            <Route path="shipping" element={<ShippingGuidePage />} />
+            <Route path="model/:modelName" element={<ModelHubPage />} />
             <Route path="product/:id" element={<ProductDetailPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
@@ -61,6 +78,10 @@ function App() {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="vin-requests" element={<AdminVinRequestsPage />} />
+            <Route path="kits" element={<AdminKitsManager />} />
+            <Route path="diagnostics" element={<AdminDiagnosticsPage />} />
+            <Route path="shipping" element={<AdminShippingManager />} />
             <Route path="products" element={<InventoryManager />} />
             <Route path="product/new" element={<ProductFormPage />} />
             <Route path="product/:id/edit" element={<ProductFormPage />} />

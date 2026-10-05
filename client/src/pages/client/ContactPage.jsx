@@ -52,14 +52,14 @@ const ContactPage = () => {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 backgroundColor: '#111',
-                padding: '6rem 1rem',
+                padding: 'clamp(3rem, 7vw, 6rem) 1rem',
                 textAlign: 'center',
-                marginBottom: '4rem',
+                marginBottom: 'clamp(2rem, 5vw, 4rem)',
                 borderBottom: '4px solid var(--ford-blue)'
             }}>
                 <div className="container">
                     <h1 className="animate-on-scroll" style={{
-                        fontSize: '3.5rem',
+                        fontSize: 'clamp(1.8rem, 6vw, 3.5rem)',
                         marginBottom: '1rem',
                         fontFamily: 'var(--font-logo)',
                         color: 'white',
@@ -70,7 +70,7 @@ const ContactPage = () => {
                     <p className="animate-on-scroll delay-100" style={{
                         maxWidth: '700px',
                         margin: '0 auto',
-                        fontSize: '1.5rem',
+                        fontSize: 'clamp(1rem, 3vw, 1.35rem)',
                         fontWeight: '300',
                         opacity: 1,
                         color: 'white',
@@ -85,23 +85,23 @@ const ContactPage = () => {
                 {/* Middle Grid */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                    gap: '3rem',
-                    marginBottom: '5rem',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+                    gap: 'clamp(1.5rem, 4vw, 3rem)',
+                    marginBottom: 'clamp(2.5rem, 5vw, 5rem)',
                     alignItems: 'stretch'
                 }}>
                     {/* Information Card */}
                     <div className="animate-on-scroll delay-200" style={{
                         backgroundColor: 'white',
-                        padding: '3rem',
+                        padding: 'clamp(1.5rem, 4vw, 3rem)',
                         borderRadius: '24px',
                         boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05)',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center'
                     }}>
-                        <div style={{ marginBottom: '3rem' }}>
-                            <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#111', fontWeight: '800', lineHeight: 1.2 }}>
+                        <div style={{ marginBottom: 'clamp(1.5rem, 4vw, 3rem)' }}>
+                            <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', marginBottom: '1rem', color: '#111', fontWeight: '800', lineHeight: 1.2 }}>
                                 {t('contact.getInTouch', 'Let\'s talk about your car.')}
                             </h2>
                             <p style={{ fontSize: '1.1rem', color: '#666', lineHeight: 1.6 }}>We're here to help you find the exact part you need. Drop by our store or send us a message.</p>
@@ -121,7 +121,7 @@ const ContactPage = () => {
                                 </div>
                                 <div>
                                     <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '0.25rem', color: '#111' }}>{t('contact.address', 'Our Location')}</h3>
-                                    <p style={{ color: '#555', lineHeight: '1.6' }}>Cité Sidi M'hammed, Rue Dite Bribo<br />Algiers, Algeria</p>
+                                    <p style={{ color: '#555', lineHeight: '1.6' }}>Boulevard de la Soummam<br />Alger Centre, Algérie</p>
                                 </div>
                             </div>
 
@@ -164,7 +164,7 @@ const ContactPage = () => {
                     {/* Contact Form Card */}
                     <div className="animate-on-scroll delay-300" style={{
                         backgroundColor: '#1f2937',
-                        padding: '3rem',
+                        padding: 'clamp(1.5rem, 4vw, 3rem)',
                         borderRadius: '24px',
                         boxShadow: '0 20px 40px -10px rgba(0,0,0,0.2)',
                         color: 'white'
@@ -172,7 +172,7 @@ const ContactPage = () => {
                         <h2 style={{
                             color: 'white',
                             marginBottom: '0.5rem',
-                            fontSize: '2rem',
+                            fontSize: 'clamp(1.4rem, 4vw, 2rem)',
                             fontWeight: '700'
                         }}>
                             {t('contact.sendMessage', 'Send a Message')}

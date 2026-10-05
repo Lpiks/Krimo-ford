@@ -66,7 +66,7 @@ const AdminAnalyticsPage = () => {
 
     return (
         <div style={{ paddingBottom: '2rem' }}>
-            <h1 style={{ fontSize: '2rem', color: '#111827', marginBottom: '2rem' }}>{t('admin.analytics', 'Analytics')}</h1>
+            <h1 className="admin-header-title" style={{ fontSize: '2rem', color: '#111827', marginBottom: '2rem' }}>{t('admin.analytics', 'Analytics')}</h1>
 
             {/* Stats Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
@@ -78,7 +78,7 @@ const AdminAnalyticsPage = () => {
                 {/* Add more stats cards here if needed */}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2rem' }}>
 
                 {/* Revenue Chart */}
                 <div style={{ padding: '2rem', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>

@@ -39,28 +39,28 @@ const FeaturesSection = () => {
     ];
 
     return (
-        <section style={{ backgroundColor: '#f8f9fa', padding: '4rem 1rem' }}>
+        <section style={{ backgroundColor: '#f8f9fa', padding: 'clamp(2rem, 5vw, 4rem) 1rem' }}>
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <h2 style={{
                     textAlign: 'center',
-                    marginBottom: '3rem',
+                    marginBottom: 'clamp(1.5rem, 4vw, 3rem)',
                     color: 'var(--text-dark, #333)',
-                    fontSize: '2rem'
+                    fontSize: 'clamp(1.5rem, 4vw, 2.2rem)'
                 }}>
                     {t('features.heading', 'Why Choose Krimo Store?')}
                 </h2>
 
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                    gap: '2rem',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+                    gap: '1.5rem',
                     textAlign: 'center'
                 }}>
                     {features.map((feature, index) => (
                         <div key={index}
                             className={`animate-on-scroll delay-${(index + 1) * 100}`}
                             style={{
-                                padding: '2rem',
+                                padding: 'clamp(1.25rem, 3.5vw, 2rem)',
                                 backgroundColor: 'white',
                                 borderRadius: '12px',
                                 boxShadow: '0 4px 6px rgba(0,0,0,0.05)',

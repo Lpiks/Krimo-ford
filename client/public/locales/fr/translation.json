@@ -2,6 +2,10 @@
     "nav": {
         "home": "Accueil",
         "catalog": "Catalogue",
+        "kits": "Packs Entretien",
+        "vin": "Devis Carte Grise",
+        "diagnostic": "Diagnostic Pannes",
+        "track": "Suivi Commande",
         "cart": "Panier",
         "login": "Connexion",
         "logout": "Déconnexion",
@@ -9,7 +13,56 @@
         "dashboard": "Tableau de Bord",
         "inventory": "Inventaire",
         "products": "Produits",
-        "orders": "Commandes"
+        "orders": "Commandes",
+        "garage": "Mon Garage"
+    },
+    "garage": {
+        "modalTitle": "Mon Garage Ford",
+        "modalSubtitle": "Filtrez automatiquement toutes les pièces compatibles avec votre véhicule",
+        "activeVehicle": "Véhicule actif :",
+        "noVehicleHint": "Trouvez les pièces exactes : enregistrez votre modèle Ford dans Mon Garage.",
+        "current": "Véhicule actif :",
+        "remove": "Retirer",
+        "modelLabel": "Modèle Ford",
+        "selectModel": "-- Sélectionnez votre modèle --",
+        "yearLabel": "Année de fabrication",
+        "allYears": "Toutes les années",
+        "fuelLabel": "Motorisation",
+        "cancel": "Annuler",
+        "apply": "Valider mon véhicule",
+        "change": "Changer",
+        "choose": "Choisir ma Ford",
+        "clear": "Effacer"
+    },
+    "track": {
+        "badge": "Suivi en Temps Réel 58 Wilayas",
+        "title": "Suivre ma Commande Ford",
+        "subtitle": "Entrez votre référence de commande ou votre numéro de téléphone pour vérifier l'état d'avancement de votre livraison.",
+        "orderIdLabel": "N° de Commande (ex: KF-9421)",
+        "phoneLabel": "N° Téléphone (Optionnel)",
+        "searchBtn": "Localiser la commande",
+        "tryDemo": "Tester un exemple direct :",
+        "orderFound": "Commande localisée avec succès",
+        "enterOrderNumber": "Veuillez saisir votre numéro de commande",
+        "orderNumber": "Commande",
+        "client": "Destinataire :",
+        "estimated": "Livraison estimée",
+        "articles": "Articles dans le colis"
+    },
+    "vin": {
+        "badge": "Service Recherche Pièce Spécifique — Soummam",
+        "title": "Devis Rapide par Carte Grise / VIN",
+        "subtitle": "Vous ne trouvez pas votre pièce dans le catalogue ? Envoyez le N° de châssis ou la photo de votre carte grise. Krimo vérifie la compatibilité et le stock sous 15 minutes.",
+        "maxPhotos": "Maximum 3 photos autorisées",
+        "photoAdded": "Photo(s) chargée(s) avec succès",
+        "submittedSuccess": "Votre demande a été transmise à Krimo !"
+    },
+    "kits": {
+        "addedSuccess": "Pack ajouté au panier avec la remise appliquée !"
+    },
+    "whatsapp": {
+        "tooltip": "Contact direct Krimo (Soummam)",
+        "defaultMessage": "Salam Krimo ! J'aimerais avoir des informations sur la disponibilité d'une pièce Ford."
     },
     "home": {
         "title": "Bienvenue chez Krimoford",
@@ -37,21 +90,27 @@
         "subtotal": "Sous-total",
         "checkout": "Passer à la Caisse",
         "continueShopping": "Continuer vos achats",
-        "remove": "Supprimer"
+        "remove": "Supprimer",
+        "added": "Ajouté au panier !"
     },
     "checkout": {
-        "title": "Paiement",
+        "title": "Finaliser ma Commande",
         "shipping": "Adresse de Livraison",
         "payment": "Méthode de Paiement",
-        "placeOrder": "Commander",
+        "placeOrder": "Valider ma Commande",
         "summary": "Résumé de la Commande",
-        "cod": "Paiement à la Livraison",
+        "cod": "Paiement à la Livraison (Cash on Delivery)",
         "bank": "Virement Bancaire (CCP/BaridiMob)",
-        "success": "Commande passée avec succès!",
+        "success": "Commande passée avec succès !",
         "address": "Adresse",
-        "city": "Ville",
+        "city": "Commune / Ville",
         "postalCode": "Code Postal",
-        "phone": "Numéro de Téléphone"
+        "phone": "Numéro de Téléphone",
+        "fullName": "Nom & Prénom",
+        "wilaya": "Wilaya",
+        "selectWilaya": "Sélectionnez votre Wilaya",
+        "contactInfo": "Coordonnées du Client",
+        "shippingDetails": "Adresse de Livraison"
     },
     "admin": {
         "loginTitle": "Connexion Admin",
@@ -67,41 +126,22 @@
         "pending": "En Attente",
         "delivered": "Livré",
         "processing": "En Traitement",
-        "cancelled": "Annulé"
-    },
-    "productForm": {
-        "titleNew": "Ajouter Nouveau Produit",
-        "titleEdit": "Modifier Produit",
-        "sku": "SKU",
-        "oem": "Numéro OEM",
-        "nameEn": "Nom (Anglais)",
-        "nameFr": "Nom (Français)",
-        "nameAr": "Nom (Arabe)",
-        "descriptionEn": "Description (Anglais)",
-        "descriptionFr": "Description (Français)",
-        "descriptionAr": "Description (Arabe)",
-        "price": "Prix (DA)",
-        "stock": "Quantité en Stock",
-        "category": "Catégorie",
-        "image": "URL Image",
-        "compatibility": "Compatibilité",
-        "save": "Enregistrer Produit"
-    },
-    "orderDetails": {
-        "title": "Détails de la Commande",
-        "customer": "Client",
-        "date": "Date",
-        "markDelivered": "Marquer comme Livré",
-        "back": "Retour aux Commandes",
-        "items": "Articles",
-        "shippingInfo": "Informations de Livraison",
-        "paymentInfo": "Informations de Paiement"
+        "cancelled": "Annulé",
+        "guest": "Invité"
     },
     "common": {
+        "all": "Tous",
         "loading": "Chargement...",
         "error": "Une erreur est survenue",
         "save": "Enregistrer",
         "cancel": "Annuler",
-        "details": "Détails"
+        "details": "Détails",
+        "select": "Sélectionner...",
+        "quantity": "Quantité",
+        "description": "Description",
+        "compatibility": "Compatibilité",
+        "back": "Retour",
+        "requiredFields": "Veuillez remplir tous les champs obligatoires",
+        "clearSearch": "Effacer la recherche"
     }
 }

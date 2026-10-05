@@ -43,7 +43,7 @@ const YMMLookup = () => {
     return (
         <div className="ymm-lookup" style={{
             background: 'linear-gradient(135deg, var(--ford-blue) 0%, #002a60 100%)',
-            padding: '2.5rem',
+            padding: 'clamp(1rem, 3.5vw, 2.5rem)',
             borderRadius: '16px',
             color: 'white',
             marginTop: '2rem',
@@ -52,14 +52,14 @@ const YMMLookup = () => {
             <h2 style={{
                 marginBottom: '1.5rem',
                 fontFamily: 'var(--font-logo)',
-                fontSize: '2.5rem',
+                fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
                 textShadow: '0 2px 4px rgba(0,0,0,0.2)'
             }}>
                 {t('ymm.title', 'Find Parts for your Ford')}
             </h2>
             <form onSubmit={handleSubmit} style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
                 gap: '1rem',
                 alignItems: 'end'
             }}>

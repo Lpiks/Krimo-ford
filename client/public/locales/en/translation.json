@@ -2,6 +2,10 @@
     "nav": {
         "home": "Home",
         "catalog": "Catalog",
+        "kits": "Service Kits",
+        "vin": "VIN Quote",
+        "diagnostic": "Troubleshooter",
+        "track": "Track Order",
         "cart": "Cart",
         "login": "Login",
         "logout": "Logout",
@@ -9,13 +13,62 @@
         "dashboard": "Dashboard",
         "inventory": "Inventory",
         "products": "Products",
-        "orders": "Orders"
+        "orders": "Orders",
+        "garage": "My Garage"
+    },
+    "garage": {
+        "modalTitle": "My Ford Garage",
+        "modalSubtitle": "Automatically filter all parts compatible with your vehicle",
+        "activeVehicle": "Active Vehicle:",
+        "noVehicleHint": "Find exact fitting parts: save your Ford model in My Garage.",
+        "current": "Active vehicle:",
+        "remove": "Remove",
+        "modelLabel": "Ford Model",
+        "selectModel": "-- Select your model --",
+        "yearLabel": "Manufacturing Year",
+        "allYears": "All years",
+        "fuelLabel": "Engine / Fuel Type",
+        "cancel": "Cancel",
+        "apply": "Save My Vehicle",
+        "change": "Change",
+        "choose": "Select My Ford",
+        "clear": "Clear"
+    },
+    "track": {
+        "badge": "Live 58-Wilaya Tracking",
+        "title": "Track My Ford Order",
+        "subtitle": "Enter your order reference or phone number to check the live status of your shipment.",
+        "orderIdLabel": "Order Number (e.g. KF-9421)",
+        "phoneLabel": "Phone Number (Optional)",
+        "searchBtn": "Track Order",
+        "tryDemo": "Try a live example:",
+        "orderFound": "Order found successfully",
+        "enterOrderNumber": "Please enter your order number",
+        "orderNumber": "Order",
+        "client": "Recipient:",
+        "estimated": "Estimated Delivery",
+        "articles": "Items in Package"
+    },
+    "vin": {
+        "badge": "Specialist Parts Sourcing — Soummam Strip",
+        "title": "Fast Quote by Registration Card / VIN",
+        "subtitle": "Can't find your part in the catalog? Send your 17-digit chassis number or registration card photo. Krimo verifies compatibility and availability in 15 minutes.",
+        "maxPhotos": "Maximum 3 photos allowed",
+        "photoAdded": "Photo(s) added successfully",
+        "submittedSuccess": "Your request has been dispatched to Krimo!"
+    },
+    "kits": {
+        "addedSuccess": "Package added to cart with discount applied!"
+    },
+    "whatsapp": {
+        "tooltip": "Direct Chat with Krimo (Soummam)",
+        "defaultMessage": "Hello Krimo! I would like to inquire about Ford parts availability."
     },
     "home": {
         "title": "Welcome to Krimoford",
-        "subtitle": "Your trusted source for Ford auto parts in Algiers.",
+        "subtitle": "Your trusted source for genuine Ford auto parts in Algiers.",
         "shopNow": "Shop Now",
-        "featured": "Featured Products",
+        "featured": "Popular Categories",
         "ymmTitle": "Find Parts for your Ford"
     },
     "catalog": {
@@ -37,21 +90,27 @@
         "subtotal": "Subtotal",
         "checkout": "Proceed to Checkout",
         "continueShopping": "Continue Shopping",
-        "remove": "Remove"
+        "remove": "Remove",
+        "added": "Added to cart!"
     },
     "checkout": {
-        "title": "Checkout",
+        "title": "Complete Your Order",
         "shipping": "Shipping Address",
         "payment": "Payment Method",
-        "placeOrder": "Place Order",
+        "placeOrder": "Confirm Order",
         "summary": "Order Summary",
         "cod": "Cash on Delivery",
         "bank": "Bank Transfer (CCP/BaridiMob)",
         "success": "Order placed successfully!",
         "address": "Address",
-        "city": "City",
+        "city": "City / Commune",
         "postalCode": "Postal Code",
-        "phone": "Phone Number"
+        "phone": "Phone Number",
+        "fullName": "Full Name",
+        "wilaya": "Wilaya",
+        "selectWilaya": "Select your Wilaya",
+        "contactInfo": "Contact Information",
+        "shippingDetails": "Shipping Address"
     },
     "admin": {
         "loginTitle": "Admin Login",
@@ -67,41 +126,22 @@
         "pending": "Pending",
         "delivered": "Delivered",
         "processing": "Processing",
-        "cancelled": "Cancelled"
-    },
-    "productForm": {
-        "titleNew": "Add New Product",
-        "titleEdit": "Edit Product",
-        "sku": "SKU",
-        "oem": "OEM Number",
-        "nameEn": "Name (English)",
-        "nameFr": "Name (French)",
-        "nameAr": "Name (Arabic)",
-        "descriptionEn": "Description (English)",
-        "descriptionFr": "Description (French)",
-        "descriptionAr": "Description (Arabic)",
-        "price": "Price (DA)",
-        "stock": "Stock Quantity",
-        "category": "Category",
-        "image": "Image URL",
-        "compatibility": "Compatibility",
-        "save": "Save Product"
-    },
-    "orderDetails": {
-        "title": "Order Details",
-        "customer": "Customer",
-        "date": "Date",
-        "markDelivered": "Mark as Delivered",
-        "back": "Back to Orders",
-        "items": "Items",
-        "shippingInfo": "Shipping Information",
-        "paymentInfo": "Payment Information"
+        "cancelled": "Cancelled",
+        "guest": "Guest"
     },
     "common": {
+        "all": "All",
         "loading": "Loading...",
         "error": "An error occurred",
         "save": "Save",
         "cancel": "Cancel",
-        "details": "Details"
+        "details": "Details",
+        "select": "Select...",
+        "quantity": "Quantity",
+        "description": "Description",
+        "compatibility": "Compatibility",
+        "back": "Back",
+        "requiredFields": "Please fill in all required fields",
+        "clearSearch": "Clear Search"
     }
 }

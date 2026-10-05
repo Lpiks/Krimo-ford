@@ -25,6 +25,18 @@ const AdminLoginPage = () => {
         }
     };
 
+    const handleDemoLogin = () => {
+        const demoUser = {
+            _id: 'admin-krimo-soummam',
+            name: 'Krimo (Comptoir Soummam)',
+            email: 'admin@krimoford.dz',
+            role: 'admin',
+            token: 'demo-token-krimo-' + Date.now()
+        };
+        login(demoUser);
+        navigate('/admin');
+    };
+
     return (
         <div style={{
             display: 'flex',
@@ -184,6 +196,51 @@ const AdminLoginPage = () => {
                             onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
                         >
                             Sign In
+                        </button>
+
+                        <div style={{
+                            margin: '1.5rem 0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            color: '#9ca3af',
+                            fontSize: '0.8rem'
+                        }}>
+                            <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }}></div>
+                            <span style={{ padding: '0 0.75rem', fontWeight: '600' }}>OU ACCÈS RAPIDE</span>
+                            <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }}></div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleDemoLogin}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                backgroundColor: '#f0fdf4',
+                                color: '#15803d',
+                                border: '1.5px dashed #86efac',
+                                borderRadius: '8px',
+                                fontSize: '0.92rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#dcfce7';
+                                e.currentTarget.style.borderColor = '#22c55e';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f0fdf4';
+                                e.currentTarget.style.borderColor = '#86efac';
+                            }}
+                        >
+                            <span>⚡</span>
+                            <span>Connexion Démo 1-Clic (Présentation Client)</span>
                         </button>
                     </form>
                 </div>

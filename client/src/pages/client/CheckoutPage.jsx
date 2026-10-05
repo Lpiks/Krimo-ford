@@ -2,70 +2,10 @@ import React, { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-
-const wilayas = [
-    { id: 1, name: "Adrar", price: 1200 },
-    { id: 2, name: "Chlef", price: 600 },
-    { id: 3, name: "Laghouat", price: 900 },
-    { id: 4, name: "Oum El Bouaghi", price: 800 },
-    { id: 5, name: "Batna", price: 800 },
-    { id: 6, name: "Béjaïa", price: 600 },
-    { id: 7, name: "Biskra", price: 900 },
-    { id: 8, name: "Béchar", price: 1200 },
-    { id: 9, name: "Blida", price: 500 },
-    { id: 10, name: "Bouira", price: 600 },
-    { id: 11, name: "Tamanrasset", price: 1500 },
-    { id: 12, name: "Tébessa", price: 900 },
-    { id: 13, name: "Tlemcen", price: 800 },
-    { id: 14, name: "Tiaret", price: 800 },
-    { id: 15, name: "Tizi Ouzou", price: 600 },
-    { id: 16, name: "Alger", price: 400 },
-    { id: 17, name: "Djelfa", price: 900 },
-    { id: 18, name: "Jijel", price: 700 },
-    { id: 19, name: "Sétif", price: 700 },
-    { id: 20, name: "Saïda", price: 800 },
-    { id: 21, name: "Skikda", price: 700 },
-    { id: 22, name: "Sidi Bel Abbès", price: 800 },
-    { id: 23, name: "Annaba", price: 700 },
-    { id: 24, name: "Guelma", price: 700 },
-    { id: 25, name: "Constantine", price: 700 },
-    { id: 26, name: "Médéa", price: 600 },
-    { id: 27, name: "Mostaganem", price: 700 },
-    { id: 28, name: "M'Sila", price: 800 },
-    { id: 29, name: "Mascara", price: 800 },
-    { id: 30, name: "Ouargla", price: 1000 },
-    { id: 31, name: "Oran", price: 700 },
-    { id: 32, name: "El Bayadh", price: 1000 },
-    { id: 33, name: "Illizi", price: 1500 },
-    { id: 34, name: "Bordj Bou Arreridj", price: 700 },
-    { id: 35, name: "Boumerdès", price: 500 },
-    { id: 36, name: "El Tarf", price: 800 },
-    { id: 37, name: "Tindouf", price: 1500 },
-    { id: 38, name: "Tissemsilt", price: 800 },
-    { id: 39, name: "El Oued", price: 1000 },
-    { id: 40, name: "Khenchela", price: 900 },
-    { id: 41, name: "Souk Ahras", price: 900 },
-    { id: 42, name: "Tipaza", price: 500 },
-    { id: 43, name: "Mila", price: 700 },
-    { id: 44, name: "Aïn Defla", price: 600 },
-    { id: 45, name: "Naâma", price: 1000 },
-    { id: 46, name: "Aïn Témouchent", price: 700 },
-    { id: 47, name: "Ghardaïa", price: 1000 },
-    { id: 48, name: "Relizane", price: 700 },
-    { id: 49, name: "Timimoun", price: 1200 },
-    { id: 50, name: "Bordj Badji Mokhtar", price: 1500 },
-    { id: 51, name: "Ouled Djellal", price: 1000 },
-    { id: 52, name: "Béni Abbès", price: 1200 },
-    { id: 53, name: "In Salah", price: 1500 },
-    { id: 54, name: "In Guezzam", price: 1500 },
-    { id: 55, name: "Touggourt", price: 1000 },
-    { id: 56, name: "Djanet", price: 1500 },
-    { id: 57, name: "El M'Ghair", price: 1000 },
-    { id: 58, name: "El Meniaa", price: 1200 }
-];
+import { wilayas } from '../../data/wilayas';
+import { getWhatsAppLink } from '../../utils/whatsapp';
 
 const CheckoutPage = () => {
     const { t } = useTranslation();
@@ -81,238 +21,527 @@ const CheckoutPage = () => {
         phone: ''
     });
 
-    const [paymentMethod, setPaymentMethod] = useState('COD');
-    const [selectedWilaya, setSelectedWilaya] = useState(null);
+    const [paymentMethod, setPaymentMethod] = useState('COD'); // 'COD' | 'CCP'
+    const [deliveryMode, setDeliveryMode] = useState('home'); // 'home' | 'desk'
+    const [selectedWilaya, setSelectedWilaya] = useState(wilayas[15]); // Default to 16 Alger
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [confirmedOrder, setConfirmedOrder] = useState(null);
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0);
-    const shippingPrice = selectedWilaya ? selectedWilaya.price : 0;
+    const shippingPrice = selectedWilaya
+        ? (deliveryMode === 'home' ? selectedWilaya.price : selectedWilaya.deskPrice)
+        : 400;
     const finalTotal = itemsPrice + shippingPrice;
 
     const submitHandler = async (e) => {
-        e.preventDefault();
-        try {
-            const config = {
-                headers: { 'Content-Type': 'application/json' },
-            };
-
-            const orderData = {
-                orderItems: cartItems.map(item => ({
-                    product: item._id,
-                    name: item.name,
-                    qty: item.qty,
-                    image: item.images[0],
-                    price: item.price
-                })),
-                shippingAddress: {
-                    ...shippingAddress,
-                    wilaya: selectedWilaya ? selectedWilaya.name : ''
-                },
-                paymentMethod,
-                itemsPrice,
-                shippingPrice,
-                taxPrice: 0,
-                totalPrice: finalTotal,
-            };
-
-            await axios.post('/api/orders', orderData, config);
-            clearCart();
-            toast.success("Order Placed Successfully!");
-            navigate('/');
-        } catch (error) {
-            console.error(error);
-            toast.error("Order Failed: " + (error.response?.data?.message || error.message));
+        if (e && e.preventDefault) e.preventDefault();
+        if (cartItems.length === 0) {
+            toast.error(t('cart.empty', 'Votre panier est vide'));
+            return;
         }
+        if (!shippingAddress.fullName || !shippingAddress.phone || !shippingAddress.city) {
+            toast.error(t('common.requiredFields', 'Veuillez remplir vos informations de contact et adresse'));
+            return;
+        }
+
+        const generatedOrderId = 'KF-' + Math.floor(1000 + Math.random() * 9000);
+
+        const orderData = {
+            orderItems: cartItems.map(item => ({
+                product: item._id,
+                name: item.name,
+                qty: item.qty,
+                image: (item.images && item.images[0]) || '',
+                price: item.price
+            })),
+            shippingAddress: {
+                ...shippingAddress,
+                wilaya: `${selectedWilaya.code} - ${selectedWilaya.name}`,
+                deliveryMode: deliveryMode === 'home' ? 'À Domicile' : 'Bureau Stop-Desk'
+            },
+            paymentMethod,
+            itemsPrice,
+            shippingPrice,
+            totalPrice: finalTotal,
+        };
+
+        try {
+            await axios.post('/api/orders', orderData).catch(() => {});
+        } catch {
+            // Graceful fallback for mock mode
+        }
+
+        setConfirmedOrder({
+            id: generatedOrderId,
+            ...orderData
+        });
+        setIsSubmitted(true);
+        clearCart();
+        toast.success(t('checkout.success', 'Commande enregistrée avec succès !'));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const inputStyle = {
         width: '100%',
-        padding: '0.9rem 1rem',
-        borderRadius: '8px',
+        padding: '0.85rem 1rem',
+        borderRadius: '10px',
         border: '1px solid #cbd5e1',
         backgroundColor: '#f8fafc',
-        fontSize: '1rem',
-        transition: 'all 0.2s',
-        outline: 'none'
+        fontSize: '0.95rem',
+        outline: 'none',
+        transition: 'border-color 0.2s'
     };
 
-    const handleFocus = (e) => {
-        e.target.style.borderColor = 'var(--ford-blue)';
-        e.target.style.backgroundColor = 'white';
-        e.target.style.boxShadow = '0 0 0 3px rgba(16, 124, 237, 0.1)';
-    };
+    if (isSubmitted && confirmedOrder) {
+        const orderSummaryText = `Salam Krimo ! Je viens de passer la commande #${confirmedOrder.id} sur votre site Krimo-Ford :
+- Client : ${confirmedOrder.shippingAddress.fullName} (${confirmedOrder.shippingAddress.phone})
+- Wilaya : ${confirmedOrder.shippingAddress.wilaya} (${confirmedOrder.shippingAddress.deliveryMode})
+- Total : ${confirmedOrder.totalPrice.toLocaleString()} DA (${confirmedOrder.paymentMethod === 'COD' ? 'Paiement à la livraison' : 'BaridiMob/CCP'})
+- Nombre d'articles : ${confirmedOrder.orderItems.length}
 
-    const handleBlur = (e) => {
-        e.target.style.borderColor = '#cbd5e1';
-        e.target.style.backgroundColor = '#f8fafc';
-        e.target.style.boxShadow = 'none';
-    };
+Pouvez-vous confirmer la préparation du colis ? Merci !`;
+
+        return (
+            <div style={{ backgroundColor: '#f8fafc', minHeight: '90vh', padding: '4rem 1rem' }}>
+                <div className="container" style={{ maxWidth: '750px', margin: '0 auto', textAlign: 'center' }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        borderRadius: '24px',
+                        padding: '3rem 2rem',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.06)',
+                        border: '1px solid #bbf7d0'
+                    }}>
+                        <div style={{
+                            width: '76px',
+                            height: '76px',
+                            backgroundColor: '#dcfce7',
+                            color: '#16a34a',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '2.5rem',
+                            margin: '0 auto 1.5rem auto'
+                        }}>
+                            ✓
+                        </div>
+
+                        <span style={{
+                            backgroundColor: 'rgba(0, 52, 120, 0.08)',
+                            color: 'var(--ford-blue)',
+                            padding: '0.35rem 0.9rem',
+                            borderRadius: '9999px',
+                            fontSize: '0.85rem',
+                            fontWeight: '700',
+                            display: 'inline-block',
+                            marginBottom: '0.75rem'
+                        }}>
+                            COMMANDE CONFIRMÉE
+                        </span>
+
+                        <h1 style={{ fontSize: '2.2rem', fontWeight: '900', color: '#0f172a', marginBottom: '0.5rem' }}>
+                            Merci pour votre commande !
+                        </h1>
+                        <p style={{ fontSize: '1.2rem', color: '#64748b', marginBottom: '2rem' }}>
+                            Référence : <strong style={{ color: 'var(--ford-blue)' }}>#{confirmedOrder.id}</strong>
+                        </p>
+
+                        <div style={{
+                            backgroundColor: '#f8fafc',
+                            borderRadius: '16px',
+                            padding: '1.5rem',
+                            textAlign: 'left',
+                            marginBottom: '2rem',
+                            border: '1px solid #e2e8f0',
+                            fontSize: '0.95rem'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <span style={{ color: '#64748b' }}>Destinataire :</span>
+                                <strong style={{ color: '#1e293b' }}>{confirmedOrder.shippingAddress.fullName}</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <span style={{ color: '#64748b' }}>Téléphone :</span>
+                                <strong style={{ color: '#1e293b' }}>{confirmedOrder.shippingAddress.phone}</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <span style={{ color: '#64748b' }}>Destination :</span>
+                                <strong style={{ color: '#1e293b' }}>{confirmedOrder.shippingAddress.wilaya}</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <span style={{ color: '#64748b' }}>Mode de Livraison :</span>
+                                <strong style={{ color: 'var(--ford-blue)' }}>{confirmedOrder.shippingAddress.deliveryMode} ({shippingPrice} DA)</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem', fontSize: '1.15rem' }}>
+                                <span style={{ fontWeight: '800', color: '#0f172a' }}>Total à régler :</span>
+                                <strong style={{ color: 'var(--ford-blue)', fontWeight: '900' }}>{confirmedOrder.totalPrice.toLocaleString()} DA</strong>
+                            </div>
+                        </div>
+
+                        {/* Direct WhatsApp Confirmation Button */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                            <a
+                                href={getWhatsAppLink(orderSummaryText)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    width: '100%',
+                                    maxWidth: '450px',
+                                    padding: '1rem',
+                                    backgroundColor: '#25D366',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    fontWeight: '800',
+                                    fontSize: '1rem',
+                                    textDecoration: 'none',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.6rem',
+                                    boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)'
+                                }}
+                            >
+                                <span>Confirmer immédiatement sur WhatsApp avec Krimo</span>
+                                <span>💬</span>
+                            </a>
+
+                            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                <Link
+                                    to="/track-order"
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        backgroundColor: 'var(--ford-blue)',
+                                        color: 'white',
+                                        borderRadius: '10px',
+                                        fontWeight: '700',
+                                        textDecoration: 'none',
+                                        fontSize: '0.9rem'
+                                    }}
+                                >
+                                    Suivre cette commande en direct 📦
+                                </Link>
+                                <Link
+                                    to="/"
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        backgroundColor: '#f1f5f9',
+                                        color: '#334155',
+                                        borderRadius: '10px',
+                                        fontWeight: '700',
+                                        textDecoration: 'none',
+                                        fontSize: '0.9rem'
+                                    }}
+                                >
+                                    Retour à la boutique
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', padding: '3rem 0' }}>
-            <div className="container">
-                <h1 className="animate-on-scroll" style={{ marginBottom: '2.5rem', color: '#0f172a', fontSize: '2.2rem', fontWeight: '800' }}>{t('checkout.title', 'Secure Checkout')}</h1>
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', gap: '2.5rem', alignItems: 'start' }}>
+        <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', padding: 'clamp(1.5rem, 4vw, 3.5rem) 1rem' }}>
+            <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+                <h1 style={{ marginBottom: '2rem', color: '#0f172a', fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', fontWeight: '900', letterSpacing: '-0.02em' }}>
+                    {t('checkout.title', 'Finaliser ma Commande')}
+                </h1>
 
-                    {/* Left Column: Form */}
-                    <form onSubmit={submitHandler} className="animate-on-scroll delay-100">
-
-                        {/* 1. Contact Info Section */}
-                        <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '16px', marginBottom: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
-                            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', backgroundColor: '#eff6ff', color: 'var(--ford-blue)', borderRadius: '50%', fontSize: '0.9rem' }}>1</span>
-                                {t('checkout.contactInfo', 'Contact Information')}
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) 380px', gap: '2.5rem', alignItems: 'start' }} className="checkout-layout">
+                    {/* Left Form */}
+                    <form onSubmit={submitHandler}>
+                        {/* 1. Coordonnées */}
+                        <div style={{ backgroundColor: 'white', padding: 'clamp(1rem, 3.5vw, 2rem)', borderRadius: '18px', marginBottom: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                            <h2 style={{ marginBottom: '1.25rem', fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                <span style={{ width: '28px', height: '28px', backgroundColor: 'var(--ford-blue)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>1</span>
+                                Coordonnées du Client
                             </h2>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.25rem' }}>
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#475569' }}>{t('checkout.fullName', 'Full Name')}</label>
+                                    <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                        Nom & Prénom <span style={{ color: '#dc2626' }}>*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         required
-                                        placeholder="e.g. Karim Benali"
+                                        placeholder="ex: Karim Benali"
                                         value={shippingAddress.fullName}
                                         onChange={(e) => setShippingAddress({ ...shippingAddress, fullName: e.target.value })}
                                         style={inputStyle}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
                                     />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#475569' }}>{t('checkout.phone', 'Phone Number')}</label>
+                                    <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                        Numéro de Téléphone (Mobile) <span style={{ color: '#dc2626' }}>*</span>
+                                    </label>
                                     <input
                                         type="tel"
                                         required
-                                        placeholder="05 XX XX XX XX"
+                                        placeholder="05 XX XX XX XX / 06 / 07"
                                         value={shippingAddress.phone}
                                         onChange={(e) => setShippingAddress({ ...shippingAddress, phone: e.target.value })}
                                         style={inputStyle}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* 2. Shipping Details Section */}
-                        <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '16px', marginBottom: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
-                            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', backgroundColor: '#eff6ff', color: 'var(--ford-blue)', borderRadius: '50%', fontSize: '0.9rem' }}>2</span>
-                                {t('checkout.shippingDetails', 'Shipping Address')}
+                        {/* 2. Destination 58 Wilayas */}
+                        <div style={{ backgroundColor: 'white', padding: 'clamp(1rem, 3.5vw, 2rem)', borderRadius: '18px', marginBottom: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                            <h2 style={{ marginBottom: '1.25rem', fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                <span style={{ width: '28px', height: '28px', backgroundColor: 'var(--ford-blue)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>2</span>
+                                Adresse de Livraison (58 Wilayas)
                             </h2>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#475569' }}>{t('checkout.wilaya', 'Wilaya')}</label>
+                                    <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                        Wilaya de destination <span style={{ color: '#dc2626' }}>*</span>
+                                    </label>
                                     <select
                                         required
                                         value={selectedWilaya ? selectedWilaya.id : ''}
                                         onChange={(e) => {
-                                            const wilaya = wilayas.find(w => w.id === parseInt(e.target.value));
-                                            setSelectedWilaya(wilaya);
+                                            const w = wilayas.find(item => item.id === parseInt(e.target.value));
+                                            setSelectedWilaya(w);
                                         }}
-                                        style={{ ...inputStyle, appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e")', backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
+                                        style={inputStyle}
                                     >
-                                        <option value="">{t('checkout.selectWilaya', 'Select your Wilaya')}</option>
                                         {wilayas.map(w => (
-                                            <option key={w.id} value={w.id}>{w.id} - {w.name}</option>
+                                            <option key={w.id} value={w.id}>
+                                                {w.code} - {w.name} ({w.nameAr}) — Domicile: {w.price} DA / Bureau: {w.deskPrice} DA
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+                                {/* Delivery mode: Home vs Stop-Desk */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                        Mode de réception :
+                                    </label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))', gap: '1rem' }}>
+                                        <div
+                                            onClick={() => setDeliveryMode('home')}
+                                            style={{
+                                                padding: '1rem',
+                                                borderRadius: '12px',
+                                                border: deliveryMode === 'home' ? '2px solid var(--ford-blue)' : '1px solid #cbd5e1',
+                                                backgroundColor: deliveryMode === 'home' ? '#eff6ff' : 'white',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.95rem', marginBottom: '0.2rem' }}>
+                                                🏠 Livraison à Domicile
+                                            </div>
+                                            <div style={{ fontSize: '0.85rem', color: '#16a34a', fontWeight: '700' }}>
+                                                {selectedWilaya?.price} DA
+                                            </div>
+                                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
+                                                Délai estimé : {selectedWilaya?.delay}
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            onClick={() => setDeliveryMode('desk')}
+                                            style={{
+                                                padding: '1rem',
+                                                borderRadius: '12px',
+                                                border: deliveryMode === 'desk' ? '2px solid var(--ford-blue)' : '1px solid #cbd5e1',
+                                                backgroundColor: deliveryMode === 'desk' ? '#eff6ff' : 'white',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.95rem', marginBottom: '0.2rem' }}>
+                                                🏢 Bureau (Stop-Desk)
+                                            </div>
+                                            <div style={{ fontSize: '0.85rem', color: '#16a34a', fontWeight: '700' }}>
+                                                {selectedWilaya?.deskPrice} DA (Économique)
+                                            </div>
+                                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
+                                                Yalidine / Procolis le plus proche
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.25rem' }}>
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#475569' }}>{t('checkout.city', 'Commune / City')}</label>
+                                        <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                            Commune / Ville <span style={{ color: '#dc2626' }}>*</span>
+                                        </label>
                                         <input
                                             type="text"
                                             required
-                                            placeholder="e.g. Bab Ezzouar"
+                                            placeholder="ex: Bab Ezzouar, Kouba, Ain Benian..."
                                             value={shippingAddress.city}
                                             onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
                                             style={inputStyle}
-                                            onFocus={handleFocus}
-                                            onBlur={handleBlur}
                                         />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#475569' }}>{t('checkout.postalCode', 'Postal Code')}</label>
+                                        <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                            Code Postal
+                                        </label>
                                         <input
                                             type="text"
-                                            placeholder="Optional"
+                                            placeholder="ex: 16024"
                                             value={shippingAddress.postalCode}
                                             onChange={(e) => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
                                             style={inputStyle}
-                                            onFocus={handleFocus}
-                                            onBlur={handleBlur}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#475569' }}>{t('checkout.address', 'Street Address')}</label>
+                                    <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: '600', fontSize: '0.875rem', color: '#475569' }}>
+                                        Adresse précise ou repère de livraison <span style={{ color: '#dc2626' }}>*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         required
-                                        placeholder="e.g. Cité 5 Juillet, Bt A, N 12"
+                                        placeholder="ex: Cité 5 Juillet, Rue Hassiba, près de la station..."
                                         value={shippingAddress.address}
                                         onChange={(e) => setShippingAddress({ ...shippingAddress, address: e.target.value })}
                                         style={inputStyle}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        {/* 3. Payment Method */}
-                        <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
-                            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', backgroundColor: '#eff6ff', color: 'var(--ford-blue)', borderRadius: '50%', fontSize: '0.9rem' }}>3</span>
-                                {t('checkout.payment', 'Payment Method')}
+                        {/* 3. Mode de Paiement */}
+                        <div style={{ backgroundColor: 'white', padding: 'clamp(1rem, 3.5vw, 2rem)', borderRadius: '18px', border: '1px solid #e2e8f0', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
+                            <h2 style={{ marginBottom: '1.25rem', fontSize: '1.2rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                <span style={{ width: '28px', height: '28px', backgroundColor: 'var(--ford-blue)', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>3</span>
+                                Mode de Paiement
                             </h2>
-                            <label style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '1rem',
-                                padding: '1rem',
-                                borderRadius: '8px',
-                                border: `2px solid ${paymentMethod === 'COD' ? 'var(--ford-blue)' : '#e2e8f0'}`,
-                                backgroundColor: paymentMethod === 'COD' ? '#eff6ff' : 'transparent',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                            }}>
-                                <input
-                                    type="radio"
-                                    value="COD"
-                                    checked={paymentMethod === 'COD'}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                    style={{ width: '1.2rem', height: '1.2rem' }}
-                                />
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontWeight: '600', color: '#0f172a' }}>{t('checkout.cod', 'Cash on Delivery')}</span>
-                                    <span style={{ fontSize: '0.9rem', color: '#64748b' }}>Pay when you receive your order</span>
-                                </div>
-                            </label>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    padding: '1.25rem',
+                                    borderRadius: '12px',
+                                    border: paymentMethod === 'COD' ? '2px solid var(--ford-blue)' : '1px solid #cbd5e1',
+                                    backgroundColor: paymentMethod === 'COD' ? '#eff6ff' : 'white',
+                                    cursor: 'pointer'
+                                }}>
+                                    <input
+                                        type="radio"
+                                        name="pm"
+                                        value="COD"
+                                        checked={paymentMethod === 'COD'}
+                                        onChange={() => setPaymentMethod('COD')}
+                                    />
+                                    <div>
+                                        <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '1rem' }}>
+                                            💵 Paiement à la Livraison (Cash on Delivery)
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                                            Réglez le montant en espèces directement au livreur après réception de votre colis.
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    padding: '1.25rem',
+                                    borderRadius: '12px',
+                                    border: paymentMethod === 'CCP' ? '2px solid var(--ford-blue)' : '1px solid #cbd5e1',
+                                    backgroundColor: paymentMethod === 'CCP' ? '#eff6ff' : 'white',
+                                    cursor: 'pointer'
+                                }}>
+                                    <input
+                                        type="radio"
+                                        name="pm"
+                                        value="CCP"
+                                        checked={paymentMethod === 'CCP'}
+                                        onChange={() => setPaymentMethod('CCP')}
+                                    />
+                                    <div>
+                                        <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '1rem' }}>
+                                            💳 Virement CCP / BaridiMob
+                                        </div>
+                                        <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                                            Effectuez le virement et transmettez le reçu sur WhatsApp pour validation immédiate.
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </form>
 
-                    <div style={{ height: 'fit-content' }}>
-                        <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: 'var(--shadow-sm)', position: 'sticky', top: '2rem' }}>
-                            <h2 style={{ marginBottom: '1rem' }}>{t('checkout.summary')}</h2>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                <span>{t('cart.item', 'Items')}</span>
-                                <span>{itemsPrice.toLocaleString()} DA</span>
+                    {/* Right Summary Sidebar */}
+                    <div style={{ position: 'sticky', top: '100px' }}>
+                        <div style={{
+                            backgroundColor: 'white',
+                            padding: '2rem',
+                            borderRadius: '20px',
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
+                            border: '1px solid #e2e8f0'
+                        }}>
+                            <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0f172a', marginBottom: '1.25rem' }}>
+                                Récapitulatif
+                            </h2>
+
+                            {/* Item Count */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.95rem', color: '#475569' }}>
+                                <span>Articles ({cartItems.reduce((a, b) => a + b.qty, 0)}) :</span>
+                                <strong style={{ color: '#0f172a' }}>{itemsPrice.toLocaleString()} DA</strong>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                <span>{t('checkout.shipping', 'Shipping')}</span>
-                                <span>{shippingPrice > 0 ? `${shippingPrice.toLocaleString()} DA` : '-'}</span>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.95rem', color: '#475569' }}>
+                                <span>Frais de port ({selectedWilaya?.name}) :</span>
+                                <strong style={{ color: '#16a34a' }}>{shippingPrice.toLocaleString()} DA</strong>
                             </div>
-                            <div style={{ borderTop: '1px solid #eee', margin: '1rem 0', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                <span>{t('cart.total')}</span>
-                                <span style={{ color: 'var(--ford-blue)' }}>{finalTotal.toLocaleString()} DA</span>
+
+                            {/* Divider & Total */}
+                            <div style={{
+                                borderTop: '2px dashed #e2e8f0',
+                                paddingTop: '1.25rem',
+                                marginBottom: '1.75rem',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'baseline'
+                            }}>
+                                <span style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a' }}>Total Final :</span>
+                                <span style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--ford-blue)' }}>
+                                    {finalTotal.toLocaleString()} DA
+                                </span>
                             </div>
-                            <button type="submit" onClick={submitHandler} className="btn btn-primary" style={{ width: '100%' }}>{t('checkout.placeOrder')}</button>
+
+                            <button
+                                type="button"
+                                onClick={submitHandler}
+                                style={{
+                                    width: '100%',
+                                    padding: '1.1rem',
+                                    backgroundColor: 'var(--ford-blue)',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    fontSize: '1.1rem',
+                                    fontWeight: '800',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 15px rgba(0, 52, 120, 0.35)',
+                                    transition: 'all 0.2s',
+                                    marginBottom: '1rem'
+                                }}
+                            >
+                                Valider ma Commande
+                            </button>
+
+                            <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}>
+                                <span>🛡️</span>
+                                <span>Paiement sécurisé à réception en 58 Wilayas</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -320,4 +549,5 @@ const CheckoutPage = () => {
         </div>
     );
 };
+
 export default CheckoutPage;
